@@ -2,96 +2,67 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Moldura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
-
-    <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl">
-        <h1 class="text-2xl font-bold text-slate-800 text-center mb-2">Adicione sua Moldura</h1>
-
-        <!-- Etapa 1: Upload -->
-        <div id="upload-section" class="mb-6">
-            <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-indigo-500 transition-colors bg-slate-50">
-                <span class="text-sm font-medium text-slate-600">Clique aqui para enviar sua foto</span>
-                <input type="file" id="upload-input" accept="image/*" class="hidden">
-            </label>
+<body class="bg-slate-100 p-4 flex justify-center">
+    <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
+        <input type="file" id="upload-input" accept="image/*" class="mb-4 block w-full text-sm">
+        
+        <div id="editor-container" class="hidden relative w-full aspect-square bg-gray-200 overflow-hidden mb-4">
+            <img id="image-to-crop" class="max-w-full">
+            <!-- Moldura -->
+            <img id="frame-overlay" 
+                 src="https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png" 
+                 crossorigin="anonymous" 
+                 class="absolute inset-0 w-full h-full pointer-events-none z-10">
         </div>
 
-        <!-- Etapa 2: Editor -->
-        <div id="editor-section" class="hidden flex-col items-center">
-            <div class="relative w-full max-w-[400px] aspect-square bg-slate-200 rounded-lg overflow-hidden shadow-inner mb-4">
-                <img id="image-to-crop" class="max-w-full block" alt="Foto para ajuste">
-                
-                <!-- Moldura Fixa (Link atualizado) -->
-                <img id="frame-overlay" 
-                     src="https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png" 
-                     crossorigin="anonymous"
-                     class="absolute inset-0 w-full h-full pointer-events-none z-10 object-contain" alt="Moldura">
-            </div>
-
-            <div class="flex gap-2 w-full max-w-[400px] mb-4">
-                <button onclick="zoomIn()" class="flex-1 bg-slate-200 py-2 rounded-lg text-sm">Zoom +</button>
-                <button onclick="zoomOut()" class="flex-1 bg-slate-200 py-2 rounded-lg text-sm">Zoom -</button>
-            </div>
-
-            <button id="download-btn" class="w-full max-w-[400px] bg-indigo-600 text-white font-semibold py-3 rounded-xl">
-                Baixar Imagem Pronta
-            </button>
-        </div>
+        <button id="download-btn" class="hidden w-full bg-blue-600 text-white py-2 rounded-lg">Baixar Imagem Final</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        const uploadInput = document.getElementById('upload-input');
-        const editorSection = document.getElementById('editor-section');
-        const imageToCrop = document.getElementById('image-to-crop');
-        const frameOverlay = document.getElementById('frame-overlay');
-        const downloadBtn = document.getElementById('download-btn');
-        let cropper = null;
+        const upload = document.getElementById('upload-input');
+        const img = document.getElementById('image-to-crop');
+        const frame = document.getElementById('frame-overlay');
+        const btn = document.getElementById('download-btn');
+        let cropper;
 
-        uploadInput.addEventListener('change', (e) => {
+        upload.onchange = (e) => {
             const reader = new FileReader();
             reader.onload = (event) => {
-                imageToCrop.src = event.target.result;
-                document.getElementById('upload-section').classList.add('hidden');
-                editorSection.classList.remove('hidden');
-                editorSection.classList.add('flex');
-
-                if (cropper) cropper.destroy();
-                cropper = new Cropper(imageToCrop, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    dragMode: 'move',
-                    guides: false,
-                    cropBoxMovable: false,
-                    cropBoxResizable: false,
-                });
+                img.src = event.target.result;
+                document.getElementById('editor-container').classList.remove('hidden');
+                btn.classList.remove('hidden');
+                if(cropper) cropper.destroy();
+                cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
             };
             reader.readAsDataURL(e.target.files[0]);
-        });
+        };
 
-        function zoomIn() { if (cropper) cropper.zoom(0.1); }
-        function zoomOut() { if (cropper) cropper.zoom(-0.1); }
-
-        downloadBtn.addEventListener('click', () => {
+        btn.onclick = () => {
             const canvas = cropper.getCroppedCanvas({ width: 1080, height: 1080 });
             const ctx = canvas.getContext('2d');
             
-            const frame = new Image();
-            frame.crossOrigin = "anonymous";
-            frame.src = frameOverlay.src;
+            // Recriando a imagem da moldura para garantir o CORS
+            const imgFrame = new Image();
+            imgFrame.crossOrigin = "anonymous";
+            imgFrame.src = frame.src + "?" + new Date().getTime(); // Cache buster
             
-            frame.onload = () => {
-                ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+            imgFrame.onload = () => {
+                ctx.drawImage(imgFrame, 0, 0, 1080, 1080);
                 const link = document.createElement('a');
-                link.download = 'minha-foto-com-moldura.png';
+                link.download = 'foto-moldura.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             };
-        });
+            
+            imgFrame.onerror = () => {
+                alert("Erro: O servidor da imagem não permitiu o acesso (CORS). Tente hospedar a moldura em outro local.");
+            };
+        };
     </script>
 </body>
 </html>
