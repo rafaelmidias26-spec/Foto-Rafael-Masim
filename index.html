@@ -1,214 +1,97 @@
-<!DOCTYPE html>  
-<html lang="pt-BR">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Combinar Imagens Avançado</title>  
-    <style>  
-        body { font-family: sans-serif; text-align: center; background-color: #f4f4f9; padding: 20px; }  
-        .container { max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }  
-        #meuCanvas { border: 1px solid #ccc; max-width: 100%; height: auto; margin-top: 15px; cursor: move; display: block; margin-left: auto; margin-right: auto; }  
-        .controles { margin-top: 15px; display: none; background: #eee; padding: 15px; border-radius: 5px; }  
-        .controle-grupo { margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }  
-        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; font-weight: bold; }  
-        .btn:hover { background-color: #0056b3; }  
-        .btn-filtro { padding: 5px 10px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 3px; }  
-        .btn-filtro.ativo { background: #007bff; color: white; border-color: #007bff; }  
-        .dica { font-size: 13px; color: #666; margin-top: 5px; }  
-    </style>  
-</head>  
-<body>  
-  
-<div class="container">  
-    <h2>Personalize sua Foto na Moldura</h2>  
-      
-    <!-- Seleção de arquivo -->  
-    <input type="file" id="uploadFoto" accept="image/*">  
-    <br>  
-      
-    <!-- Canvas de exibição -->  
-    <canvas id="meuCanvas" width="600" height="600"></canvas>  
-      
-    <!-- Painel de Controles (Aparece após o upload) -->  
-    <div id="painelControles" class="controles">  
-        <div class="controle-grupo">  
-            <label for="rangeZoom">🔍 Zoom:</label>  
-            <input type="range" id="rangeZoom" min="0.1" max="3" step="0.01" value="1">  
-        </div>  
-        <div class="controle-grupo">  
-            <span>🎨 Filtros:</span>  
-            <button class="btn-filtro ativo" onclick="mudarFiltro('normal', this)">Original</button>  
-            <button class="btn-filtro" onclick="mudarFiltro('pb', this)">P&B</button>  
-            <button class="btn-filtro" onclick="mudarFiltro('sepia', this)">Sépia</button>  
-        </div>  
-        <p class="dica">💡 Clique e arraste a imagem no quadro acima para ajustar a posição.</p>  
-    </div>  
-      
-    <!-- Botão de Download -->  
-    <a id="btnBaixar" class="btn" style="display: none;">Baixar Imagem Final</a>  
-</div>  
-  
-<script>  
-const input = document.getElementById('uploadFoto');  
-const canvas = document.getElementById('meuCanvas');  
-const ctx = canvas.getContext('2d');  
-const painelControles = document.getElementById('painelControles');  
-const rangeZoom = document.getElementById('rangeZoom');  
-const btnBaixar = document.getElementById('btnBaixar');  
-  
-// Variáveis de controle da foto do usuário  
-let imgUsuario = null;  
-let zoom = 1;  
-let imgX = 0;  
-let imgY = 0;  
-let filtroAtual = 'normal';  
-  
-// Variáveis de arrasto (mouse/touch)  
-let arrastando = false;  
-let startX, startY;  
-  
-// 1. Carrega a imagem fixa (moldura)  
-const imagemFixa = new Image();  
-imagemFixa.crossOrigin = "anonymous";   
-imagemFixa.src = 'https://ibb.co/fdq2frBw'; // SUBSTITUA pelo link da sua moldura/imagem fixa  
-  
-imagemFixa.onload = function() {  
-    desenharCanvas();  
-};  
-  
-// Função principal que redesenha tudo em camadas  
-function desenharCanvas() {  
-    ctx.clearRect(0, 0, canvas.width, canvas.height);  
-  
-    if (imgUsuario) {  
-        ctx.save(); // Salva o estado do canvas para aplicar filtros apenas na foto  
-  
-        // Aplica o filtro de cor selecionado  
-        if (filtroAtual === 'pb') {  
-            ctx.filter = 'grayscale(100%)';  
-        } else if (filtroAtual === 'sepia') {  
-            ctx.filter = 'sepia(100%)';  
-        } else {  
-            ctx.filter = 'none';  
-        }  
-  
-        // Largura e altura baseadas no zoom do usuário  
-        let largBase = imgUsuario.width * zoom;  
-        let altBase = imgUsuario.height * zoom;  
-  
-        // Desenha a foto do usuário com a posição e zoom atuais  
-        ctx.drawImage(imgUsuario, imgX, imgY, largBase, altBase);  
-          
-        ctx.restore(); // Restaura o canvas para que a moldura NÃO pegue o filtro de cor  
-    }  
-  
-    // Desenha a imagem fixa/moldura por cima de tudo  
-    ctx.drawImage(imagemFixa, 0, 0, canvas.width, canvas.height);  
-      
-    // Atualiza o link de download  
-    if (imgUsuario) {  
-        btnBaixar.href = canvas.toDataURL('image/png');  
-        btnBaixar.download = 'minha-foto-ajustada.png';  
-    }  
-}  
-  
-// 2. Evento de Upload da Foto  
-input.addEventListener('change', function(e) {  
-    const arquivo = e.target.files[0];  
-    if (!arquivo) return;  
-  
-    const leitor = new FileReader();  
-    leitor.onload = function(evento) {  
-        imgUsuario = new Image();  
-        imgUsuario.src = evento.target.result;  
-          
-        imgUsuario.onload = function() {  
-            // Inicializa a foto centralizada e cobrindo o canvas de forma proporcional  
-            let escalaInicial = Math.max(canvas.width / imgUsuario.width, canvas.height / imgUsuario.height);  
-            zoom = escalaInicial;  
-              
-            // Configura os limites do slider de zoom com base no tamanho da imagem  
-            rangeZoom.min = (escalaInicial * 0.5).toFixed(2);  
-            rangeZoom.max = (escalaInicial * 3).toFixed(2);  
-            rangeZoom.value = escalaInicial.toFixed(2);  
-  
-            // Centraliza o posicionamento inicial  
-            imgX = (canvas.width - imgUsuario.width * zoom) / 2;  
-            imgY = (canvas.height - imgUsuario.height * zoom) / 2;  
-  
-            // Mostra os controles ocultos  
-            painelControles.style.display = 'block';  
-            btnBaixar.style.display = 'inline-block';  
-  
-            desenharCanvas();  
-        }  
-    }  
-    leitor.readAsDataURL(arquivo);  
-});  
-  
-// 3. Controle de Zoom (Controle deslizante)  
-rangeZoom.addEventListener('input', function() {  
-    let centroX = imgX + (imgUsuario.width * zoom) / 2;  
-    let centroY = imgY + (imgUsuario.height * zoom) / 2;  
-      
-    zoom = parseFloat(this.value);  
-      
-    // Mantém a imagem dando zoom a partir do centro dela mesma  
-    imgX = centroX - (imgUsuario.width * zoom) / 2;  
-    imgY = centroY - (imgUsuario.height * zoom) / 2;  
-      
-    desenharCanvas();  
-});  
-  
-// 4. Controle de Filtros de Cor  
-function mudarFiltro(tipo, botao) {  
-    filtroAtual = tipo;  
-    document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('ativo'));  
-    botao.classList.add('ativo');  
-    desenharCanvas();  
-}  
-  
-// 5. Lógica para clicar/tocar e arrastar a foto  
-function obterCoordenadas(e) {  
-    if (e.touches && e.touches.length > 0) {  
-        return { x: e.touches[0].clientX, y: e.touches[0].clientY };  
-    }  
-    return { x: e.clientX, y: e.clientY };  
-}  
-  
-function iniciarArrasto(e) {  
-    if (!imgUsuario) return;  
-    arrastando = true;  
-    const coords = obterCoordenadas(e);  
-    startX = coords.x - imgX;  
-    startY = coords.y - imgY;  
-    e.preventDefault();  
-}  
-  
-function movendo(e) {  
-    if (!arrastando) return;  
-    const coords = obterCoordenadas(e);  
-    imgX = coords.x - startX;  
-    imgY = coords.y - startY;  
-    desenharCanvas();  
-    e.preventDefault();  
-}  
-  
-function pararArrasto() {  
-    arrastando = false;  
-}  
-  
-// Eventos de Mouse  
-canvas.addEventListener('mousedown', iniciarArrasto);  
-window.addEventListener('mousemove', movendo);  
-window.addEventListener('mouseup', pararArrasto);  
-  
-// Eventos de Toque (Celulares/Tablets)  
-canvas.addEventListener('touchstart', iniciarArrasto, { passive: false });  
-window.addEventListener('touchmove', movendo, { passive: false });  
-window.addEventListener('touchend', pararArrasto);  
-  
-</script>  
-  
-</body>  
-</html>  
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Moldura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl">
+        <h1 class="text-2xl font-bold text-slate-800 text-center mb-2">Adicione sua Moldura</h1>
+
+        <!-- Etapa 1: Upload -->
+        <div id="upload-section" class="mb-6">
+            <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-indigo-500 transition-colors bg-slate-50">
+                <span class="text-sm font-medium text-slate-600">Clique aqui para enviar sua foto</span>
+                <input type="file" id="upload-input" accept="image/*" class="hidden">
+            </label>
+        </div>
+
+        <!-- Etapa 2: Editor -->
+        <div id="editor-section" class="hidden flex-col items-center">
+            <div class="relative w-full max-w-[400px] aspect-square bg-slate-200 rounded-lg overflow-hidden shadow-inner mb-4">
+                <img id="image-to-crop" class="max-w-full block" alt="Foto para ajuste">
+                
+                <!-- Moldura Fixa (Link atualizado) -->
+                <img id="frame-overlay" 
+                     src="https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png" 
+                     crossorigin="anonymous"
+                     class="absolute inset-0 w-full h-full pointer-events-none z-10 object-contain" alt="Moldura">
+            </div>
+
+            <div class="flex gap-2 w-full max-w-[400px] mb-4">
+                <button onclick="zoomIn()" class="flex-1 bg-slate-200 py-2 rounded-lg text-sm">Zoom +</button>
+                <button onclick="zoomOut()" class="flex-1 bg-slate-200 py-2 rounded-lg text-sm">Zoom -</button>
+            </div>
+
+            <button id="download-btn" class="w-full max-w-[400px] bg-indigo-600 text-white font-semibold py-3 rounded-xl">
+                Baixar Imagem Pronta
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        const uploadInput = document.getElementById('upload-input');
+        const editorSection = document.getElementById('editor-section');
+        const imageToCrop = document.getElementById('image-to-crop');
+        const frameOverlay = document.getElementById('frame-overlay');
+        const downloadBtn = document.getElementById('download-btn');
+        let cropper = null;
+
+        uploadInput.addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imageToCrop.src = event.target.result;
+                document.getElementById('upload-section').classList.add('hidden');
+                editorSection.classList.remove('hidden');
+                editorSection.classList.add('flex');
+
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    guides: false,
+                    cropBoxMovable: false,
+                    cropBoxResizable: false,
+                });
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        function zoomIn() { if (cropper) cropper.zoom(0.1); }
+        function zoomOut() { if (cropper) cropper.zoom(-0.1); }
+
+        downloadBtn.addEventListener('click', () => {
+            const canvas = cropper.getCroppedCanvas({ width: 1080, height: 1080 });
+            const ctx = canvas.getContext('2d');
+            
+            const frame = new Image();
+            frame.crossOrigin = "anonymous";
+            frame.src = frameOverlay.src;
+            
+            frame.onload = () => {
+                ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+                const link = document.createElement('a');
+                link.download = 'minha-foto-com-moldura.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+        });
+    </script>
+</body>
+</html>
