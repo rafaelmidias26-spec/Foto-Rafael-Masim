@@ -1,0 +1,214 @@
+<!DOCTYPE html>  
+<html lang="pt-BR">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Combinar Imagens Avançado</title>  
+    <style>  
+        body { font-family: sans-serif; text-align: center; background-color: #f4f4f9; padding: 20px; }  
+        .container { max-width: 650px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }  
+        #meuCanvas { border: 1px solid #ccc; max-width: 100%; height: auto; margin-top: 15px; cursor: move; display: block; margin-left: auto; margin-right: auto; }  
+        .controles { margin-top: 15px; display: none; background: #eee; padding: 15px; border-radius: 5px; }  
+        .controle-grupo { margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }  
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; font-weight: bold; }  
+        .btn:hover { background-color: #0056b3; }  
+        .btn-filtro { padding: 5px 10px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 3px; }  
+        .btn-filtro.ativo { background: #007bff; color: white; border-color: #007bff; }  
+        .dica { font-size: 13px; color: #666; margin-top: 5px; }  
+    </style>  
+</head>  
+<body>  
+  
+<div class="container">  
+    <h2>Personalize sua Foto na Moldura</h2>  
+      
+    <!-- Seleção de arquivo -->  
+    <input type="file" id="uploadFoto" accept="image/*">  
+    <br>  
+      
+    <!-- Canvas de exibição -->  
+    <canvas id="meuCanvas" width="600" height="600"></canvas>  
+      
+    <!-- Painel de Controles (Aparece após o upload) -->  
+    <div id="painelControles" class="controles">  
+        <div class="controle-grupo">  
+            <label for="rangeZoom">🔍 Zoom:</label>  
+            <input type="range" id="rangeZoom" min="0.1" max="3" step="0.01" value="1">  
+        </div>  
+        <div class="controle-grupo">  
+            <span>🎨 Filtros:</span>  
+            <button class="btn-filtro ativo" onclick="mudarFiltro('normal', this)">Original</button>  
+            <button class="btn-filtro" onclick="mudarFiltro('pb', this)">P&B</button>  
+            <button class="btn-filtro" onclick="mudarFiltro('sepia', this)">Sépia</button>  
+        </div>  
+        <p class="dica">💡 Clique e arraste a imagem no quadro acima para ajustar a posição.</p>  
+    </div>  
+      
+    <!-- Botão de Download -->  
+    <a id="btnBaixar" class="btn" style="display: none;">Baixar Imagem Final</a>  
+</div>  
+  
+<script>  
+const input = document.getElementById('uploadFoto');  
+const canvas = document.getElementById('meuCanvas');  
+const ctx = canvas.getContext('2d');  
+const painelControles = document.getElementById('painelControles');  
+const rangeZoom = document.getElementById('rangeZoom');  
+const btnBaixar = document.getElementById('btnBaixar');  
+  
+// Variáveis de controle da foto do usuário  
+let imgUsuario = null;  
+let zoom = 1;  
+let imgX = 0;  
+let imgY = 0;  
+let filtroAtual = 'normal';  
+  
+// Variáveis de arrasto (mouse/touch)  
+let arrastando = false;  
+let startX, startY;  
+  
+// 1. Carrega a imagem fixa (moldura)  
+const imagemFixa = new Image();  
+imagemFixa.crossOrigin = "anonymous";   
+imagemFixa.src = 'https://ibb.co/fdq2frBw'; // SUBSTITUA pelo link da sua moldura/imagem fixa  
+  
+imagemFixa.onload = function() {  
+    desenharCanvas();  
+};  
+  
+// Função principal que redesenha tudo em camadas  
+function desenharCanvas() {  
+    ctx.clearRect(0, 0, canvas.width, canvas.height);  
+  
+    if (imgUsuario) {  
+        ctx.save(); // Salva o estado do canvas para aplicar filtros apenas na foto  
+  
+        // Aplica o filtro de cor selecionado  
+        if (filtroAtual === 'pb') {  
+            ctx.filter = 'grayscale(100%)';  
+        } else if (filtroAtual === 'sepia') {  
+            ctx.filter = 'sepia(100%)';  
+        } else {  
+            ctx.filter = 'none';  
+        }  
+  
+        // Largura e altura baseadas no zoom do usuário  
+        let largBase = imgUsuario.width * zoom;  
+        let altBase = imgUsuario.height * zoom;  
+  
+        // Desenha a foto do usuário com a posição e zoom atuais  
+        ctx.drawImage(imgUsuario, imgX, imgY, largBase, altBase);  
+          
+        ctx.restore(); // Restaura o canvas para que a moldura NÃO pegue o filtro de cor  
+    }  
+  
+    // Desenha a imagem fixa/moldura por cima de tudo  
+    ctx.drawImage(imagemFixa, 0, 0, canvas.width, canvas.height);  
+      
+    // Atualiza o link de download  
+    if (imgUsuario) {  
+        btnBaixar.href = canvas.toDataURL('image/png');  
+        btnBaixar.download = 'minha-foto-ajustada.png';  
+    }  
+}  
+  
+// 2. Evento de Upload da Foto  
+input.addEventListener('change', function(e) {  
+    const arquivo = e.target.files[0];  
+    if (!arquivo) return;  
+  
+    const leitor = new FileReader();  
+    leitor.onload = function(evento) {  
+        imgUsuario = new Image();  
+        imgUsuario.src = evento.target.result;  
+          
+        imgUsuario.onload = function() {  
+            // Inicializa a foto centralizada e cobrindo o canvas de forma proporcional  
+            let escalaInicial = Math.max(canvas.width / imgUsuario.width, canvas.height / imgUsuario.height);  
+            zoom = escalaInicial;  
+              
+            // Configura os limites do slider de zoom com base no tamanho da imagem  
+            rangeZoom.min = (escalaInicial * 0.5).toFixed(2);  
+            rangeZoom.max = (escalaInicial * 3).toFixed(2);  
+            rangeZoom.value = escalaInicial.toFixed(2);  
+  
+            // Centraliza o posicionamento inicial  
+            imgX = (canvas.width - imgUsuario.width * zoom) / 2;  
+            imgY = (canvas.height - imgUsuario.height * zoom) / 2;  
+  
+            // Mostra os controles ocultos  
+            painelControles.style.display = 'block';  
+            btnBaixar.style.display = 'inline-block';  
+  
+            desenharCanvas();  
+        }  
+    }  
+    leitor.readAsDataURL(arquivo);  
+});  
+  
+// 3. Controle de Zoom (Controle deslizante)  
+rangeZoom.addEventListener('input', function() {  
+    let centroX = imgX + (imgUsuario.width * zoom) / 2;  
+    let centroY = imgY + (imgUsuario.height * zoom) / 2;  
+      
+    zoom = parseFloat(this.value);  
+      
+    // Mantém a imagem dando zoom a partir do centro dela mesma  
+    imgX = centroX - (imgUsuario.width * zoom) / 2;  
+    imgY = centroY - (imgUsuario.height * zoom) / 2;  
+      
+    desenharCanvas();  
+});  
+  
+// 4. Controle de Filtros de Cor  
+function mudarFiltro(tipo, botao) {  
+    filtroAtual = tipo;  
+    document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('ativo'));  
+    botao.classList.add('ativo');  
+    desenharCanvas();  
+}  
+  
+// 5. Lógica para clicar/tocar e arrastar a foto  
+function obterCoordenadas(e) {  
+    if (e.touches && e.touches.length > 0) {  
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };  
+    }  
+    return { x: e.clientX, y: e.clientY };  
+}  
+  
+function iniciarArrasto(e) {  
+    if (!imgUsuario) return;  
+    arrastando = true;  
+    const coords = obterCoordenadas(e);  
+    startX = coords.x - imgX;  
+    startY = coords.y - imgY;  
+    e.preventDefault();  
+}  
+  
+function movendo(e) {  
+    if (!arrastando) return;  
+    const coords = obterCoordenadas(e);  
+    imgX = coords.x - startX;  
+    imgY = coords.y - startY;  
+    desenharCanvas();  
+    e.preventDefault();  
+}  
+  
+function pararArrasto() {  
+    arrastando = false;  
+}  
+  
+// Eventos de Mouse  
+canvas.addEventListener('mousedown', iniciarArrasto);  
+window.addEventListener('mousemove', movendo);  
+window.addEventListener('mouseup', pararArrasto);  
+  
+// Eventos de Toque (Celulares/Tablets)  
+canvas.addEventListener('touchstart', iniciarArrasto, { passive: false });  
+window.addEventListener('touchmove', movendo, { passive: false });  
+window.addEventListener('touchend', pararArrasto);  
+  
+</script>  
+  
+</body>  
+</html>  
