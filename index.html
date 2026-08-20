@@ -56,34 +56,30 @@ const painelControles = document.getElementById('painelControles');
 const rangeZoom = document.getElementById('rangeZoom');
 const btnBaixar = document.getElementById('btnBaixar');
 
-// Variáveis de controle da foto do usuário
 let imgUsuario = null;
 let zoom = 1;
 let imgX = 0;
 let imgY = 0;
 let filtroAtual = 'normal';
 
-// Variáveis de arrasto (mouse/touch)
 let arrastando = false;
 let startX, startY;
 
-// 1. Carrega a imagem fixa (moldura)
+// 1. Carrega a imagem fixa (moldura) com link direto e seguro para CORS
 const imagemFixa = new Image();
 imagemFixa.crossOrigin = "anonymous"; 
-imagemFixa.src = 'https://ibb.co/fdq2frBw'; // SUBSTITUA pelo link da sua moldura/imagem fixa
+imagemFixa.src = 'https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png';
 
 imagemFixa.onload = function() {
     desenharCanvas();
 };
 
-// Função principal que redesenha tudo em camadas
 function desenharCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (imgUsuario) {
-        ctx.save(); // Salva o estado do canvas para aplicar filtros apenas na foto
+        ctx.save(); 
 
-        // Aplica o filtro de cor selecionado
         if (filtroAtual === 'pb') {
             ctx.filter = 'grayscale(100%)';
         } else if (filtroAtual === 'sepia') {
@@ -92,23 +88,24 @@ function desenharCanvas() {
             ctx.filter = 'none';
         }
 
-        // Largura e altura baseadas no zoom do usuário
         let largBase = imgUsuario.width * zoom;
         let altBase = imgUsuario.height * zoom;
 
-        // Desenha a foto do usuário com a posição e zoom atuais
         ctx.drawImage(imgUsuario, imgX, imgY, largBase, altBase);
         
-        ctx.restore(); // Restaura o canvas para que a moldura NÃO pegue o filtro de cor
+        ctx.restore(); 
     }
 
-    // Desenha a imagem fixa/moldura por cima de tudo
+    // A imagem fixa/moldura é desenhada por cima da foto do usuário
     ctx.drawImage(imagemFixa, 0, 0, canvas.width, canvas.height);
     
-    // Atualiza o link de download
     if (imgUsuario) {
-        btnBaixar.href = canvas.toDataURL('image/png');
-        btnBaixar.download = 'minha-foto-ajustada.png';
+        try {
+            btnBaixar.href = canvas.toDataURL('image/png');
+            btnBaixar.download = 'minha-foto-ajustada.png';
+        } catch (err) {
+            console.error("Erro ao gerar download por restrição de segurança (CORS):", err);
+        }
     }
 }
 
@@ -123,20 +120,16 @@ input.addEventListener('change', function(e) {
         imgUsuario.src = evento.target.result;
         
         imgUsuario.onload = function() {
-            // Inicializa a foto centralizada e cobrindo o canvas de forma proporcional
             let escalaInicial = Math.max(canvas.width / imgUsuario.width, canvas.height / imgUsuario.height);
             zoom = escalaInicial;
             
-            // Configura os limites do slider de zoom com base no tamanho da imagem
-            rangeZoom.min = (escalaInicial * 0.5).toFixed(2);
+            rangeZoom.min = (escalaInicial * 0.3).toFixed(2);
             rangeZoom.max = (escalaInicial * 3).toFixed(2);
             rangeZoom.value = escalaInicial.toFixed(2);
 
-            // Centraliza o posicionamento inicial
             imgX = (canvas.width - imgUsuario.width * zoom) / 2;
             imgY = (canvas.height - imgUsuario.height * zoom) / 2;
 
-            // Mostra os controles ocultos
             painelControles.style.display = 'block';
             btnBaixar.style.display = 'inline-block';
 
@@ -146,14 +139,14 @@ input.addEventListener('change', function(e) {
     leitor.readAsDataURL(arquivo);
 });
 
-// 3. Controle de Zoom (Controle deslizante)
+// 3. Controle de Zoom
 rangeZoom.addEventListener('input', function() {
+    if (!imgUsuario) return;
     let centroX = imgX + (imgUsuario.width * zoom) / 2;
     let centroY = imgY + (imgUsuario.height * zoom) / 2;
     
     zoom = parseFloat(this.value);
     
-    // Mantém a imagem dando zoom a partir do centro dela mesma
     imgX = centroX - (imgUsuario.width * zoom) / 2;
     imgY = centroY - (imgUsuario.height * zoom) / 2;
     
@@ -168,7 +161,7 @@ function mudarFiltro(tipo, botao) {
     desenharCanvas();
 }
 
-// 5. Lógica para clicar/tocar e arrastar a foto
+// 5. Lógica para arrastar a foto
 function obterCoordenadas(e) {
     if (e.touches && e.touches.length > 0) {
         return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -198,16 +191,13 @@ function pararArrasto() {
     arrastando = false;
 }
 
-// Eventos de Mouse
 canvas.addEventListener('mousedown', iniciarArrasto);
 window.addEventListener('mousemove', movendo);
 window.addEventListener('mouseup', pararArrasto);
 
-// Eventos de Toque (Celulares/Tablets)
 canvas.addEventListener('touchstart', iniciarArrasto, { passive: false });
 window.addEventListener('touchmove', movendo, { passive: false });
 window.addEventListener('touchend', pararArrasto);
-
 </script>
 
 </body>
