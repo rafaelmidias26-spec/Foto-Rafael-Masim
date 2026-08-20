@@ -1,297 +1,1109 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Eu Voto - Criador de Foto</title>
+<meta charset="UTF-8">
 
-    <style>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<title>Editor de Foto</title>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #0d0f12;
-            color: #ffffff;
-            min-height: 100vh;
-        }
+<style>
 
-        header {
-            text-align: center;
-            padding: 30px 20px 20px;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        header h1 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+:root {
+    --bg: #08090b;
+    --panel: #111317;
+    --panel2: #17191e;
+    --border: #292d34;
+    --text: #f4f4f5;
+    --muted: #858b95;
+    --accent: #ffffff;
+}
 
-        header p {
-            color: #9ea3aa;
-            font-size: 15px;
-        }
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
 
-        .app {
-            width: min(1200px, 95%);
-            margin: auto;
+body {
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
 
-            display: grid;
-            grid-template-columns: 320px 1fr;
+    background: var(--bg);
+    color: var(--text);
 
-            gap: 25px;
+    overflow-x: hidden;
+}
 
-            padding-bottom: 40px;
-        }
 
-        /* =========================
-           PAINEL
-        ========================= */
+/* =====================================================
+   HEADER
+===================================================== */
 
-        .panel {
-            background: #191c20;
-            border-radius: 18px;
+header {
 
-            padding: 22px;
+    width: 100%;
 
-            box-shadow:
-                0 15px 40px rgba(0,0,0,.35);
-        }
+    padding:
+        24px
+        28px
+        18px;
 
-        .panel h2 {
-            font-size: 19px;
-            margin-bottom: 20px;
-        }
+    border-bottom:
+        1px solid
+        var(--border);
 
-        .upload-area {
-            display: block;
+    background:
+        rgba(8,9,11,.94);
 
-            border: 2px dashed #50545b;
-            border-radius: 14px;
+    backdrop-filter:
+        blur(15px);
 
-            padding: 25px 15px;
+}
 
-            text-align: center;
+.header-content {
 
-            cursor: pointer;
+    max-width: 1400px;
 
-            transition: .2s;
+    margin: auto;
 
-            margin-bottom: 25px;
-        }
+    display: flex;
 
-        .upload-area:hover {
-            border-color: #ffffff;
-            background: #22252a;
-        }
+    align-items: center;
 
-        .upload-area strong {
-            display: block;
+    justify-content: space-between;
 
-            margin-bottom: 8px;
+}
 
-            font-size: 15px;
-        }
+.logo {
 
-        .upload-area span {
-            color: #969ba3;
-            font-size: 13px;
-        }
+    display: flex;
 
-        #photoInput {
-            display: none;
-        }
+    align-items: center;
 
-        /* =========================
-           CONTROLES
-        ========================= */
+    gap: 12px;
 
-        .control {
-            margin-bottom: 22px;
-        }
+}
 
-        .control label {
-            display: flex;
+.logo-icon {
 
-            justify-content: space-between;
+    width: 42px;
+    height: 42px;
 
-            margin-bottom: 9px;
+    border-radius: 12px;
 
-            font-size: 14px;
+    background: #ffffff;
 
-            color: #dddddd;
-        }
+    color: #08090b;
 
-        input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
+    display: flex;
 
-        .buttons {
-            display: grid;
-            gap: 10px;
+    align-items: center;
+    justify-content: center;
 
-            margin-top: 25px;
-        }
+    font-size: 21px;
 
-        button {
-            border: none;
+}
 
-            border-radius: 10px;
+.logo-text strong {
 
-            padding: 13px;
+    display: block;
 
-            font-size: 14px;
+    font-size: 17px;
 
-            font-weight: bold;
+}
 
-            cursor: pointer;
+.logo-text span {
 
-            transition: .2s;
-        }
+    display: block;
 
-        .btn-reset {
-            background: #30343a;
-            color: #ffffff;
-        }
+    margin-top: 3px;
 
-        .btn-reset:hover {
-            background: #3c4148;
-        }
+    font-size: 12px;
 
-        .btn-download {
-            background: #ffffff;
-            color: #111111;
-        }
+    color: var(--muted);
 
-        .btn-download:hover {
-            background: #e9e9e9;
-            transform: translateY(-1px);
-        }
+}
 
-        /* =========================
-           PREVIEW
-        ========================= */
 
-        .preview-panel {
-            background: #191c20;
+/* =====================================================
+   LAYOUT
+===================================================== */
 
-            border-radius: 18px;
+.app {
 
-            padding: 22px;
+    width: min(
+        1400px,
+        calc(100% - 40px)
+    );
 
-            display: flex;
-            flex-direction: column;
-        }
+    margin: auto;
 
-        .preview-header {
-            display: flex;
+    padding:
+        28px
+        0
+        40px;
 
-            justify-content: space-between;
-            align-items: center;
+    display: grid;
 
-            margin-bottom: 15px;
-        }
+    grid-template-columns:
+        310px
+        minmax(400px, 1fr)
+        250px;
 
-        .preview-header h2 {
-            font-size: 19px;
-        }
+    gap: 24px;
 
-        .status {
-            font-size: 12px;
-            color: #8e949c;
-        }
+}
 
-        .canvas-container {
 
-            width: 100%;
+/* =====================================================
+   PANELS
+===================================================== */
 
-            min-height: 650px;
+.panel {
 
-            background-color: #272a2f;
+    background:
+        var(--panel);
 
-            /*
-            Fundo quadriculado para demonstrar
-            transparência.
-            */
+    border:
+        1px solid
+        var(--border);
 
-            background-image:
-                linear-gradient(45deg, #32353b 25%, transparent 25%),
-                linear-gradient(-45deg, #32353b 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #32353b 75%),
-                linear-gradient(-45deg, transparent 75%, #32353b 75%);
+    border-radius:
+        18px;
 
-            background-size: 30px 30px;
+    padding:
+        20px;
 
-            background-position:
-                0 0,
-                0 15px,
-                15px -15px,
-                -15px 0;
+}
 
-            border-radius: 14px;
+.panel-title {
 
-            overflow: hidden;
+    display: flex;
 
-            display: flex;
+    align-items: center;
 
-            align-items: center;
-            justify-content: center;
-        }
+    justify-content: space-between;
 
-        canvas {
+    margin-bottom: 20px;
 
-            max-width: 100%;
-            max-height: 100%;
+}
 
-            width: auto;
-            height: auto;
+.panel-title h2 {
 
-            display: block;
+    font-size: 15px;
 
-            cursor: grab;
+}
 
-            touch-action: none;
-        }
+.panel-title span {
 
-        canvas:active {
-            cursor: grabbing;
-        }
+    font-size: 11px;
 
-        .instructions {
+    color: var(--muted);
 
-            text-align: center;
+}
 
-            color: #777e87;
 
-            font-size: 12px;
+/* =====================================================
+   UPLOAD
+===================================================== */
 
-            margin-top: 12px;
-        }
+.upload {
 
-        /* =========================
-           MOBILE
-        ========================= */
+    border:
+        1px dashed
+        #3b4049;
 
-        @media (max-width: 850px) {
+    border-radius:
+        14px;
 
-            .app {
-                grid-template-columns: 1fr;
-            }
+    padding:
+        25px
+        15px;
 
-            .canvas-container {
-                min-height: 500px;
-            }
+    text-align:
+        center;
 
-        }
+    cursor:
+        pointer;
 
-    </style>
+    transition:
+        .2s;
+
+}
+
+.upload:hover {
+
+    background:
+        #191c21;
+
+    border-color:
+        #777d87;
+
+}
+
+.upload-icon {
+
+    width: 45px;
+    height: 45px;
+
+    margin:
+        0 auto 12px;
+
+    border-radius:
+        50%;
+
+    background:
+        #24272d;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-size:
+        20px;
+
+}
+
+.upload strong {
+
+    display:
+        block;
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        6px;
+
+}
+
+.upload small {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+#photoInput {
+
+    display:
+        none;
+
+}
+
+
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+.control {
+
+    margin-top:
+        24px;
+
+}
+
+.control-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        10px;
+
+}
+
+.control-header label {
+
+    font-size:
+        12px;
+
+    color:
+        #d9dce0;
+
+}
+
+.value {
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+
+}
+
+input[type="range"] {
+
+    width:
+        100%;
+
+    accent-color:
+        white;
+
+    cursor:
+        pointer;
+
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.button {
+
+    width:
+        100%;
+
+    border:
+        none;
+
+    border-radius:
+        11px;
+
+    padding:
+        13px;
+
+    margin-top:
+        10px;
+
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    transition:
+        .18s;
+
+}
+
+.button:hover {
+
+    transform:
+        translateY(-1px);
+
+}
+
+.button-primary {
+
+    background:
+        white;
+
+    color:
+        #08090b;
+
+}
+
+.button-secondary {
+
+    background:
+        #25282e;
+
+    color:
+        white;
+
+}
+
+.button-secondary:hover {
+
+    background:
+        #30343b;
+
+}
+
+
+/* =====================================================
+   PREVIEW AREA
+===================================================== */
+
+.preview {
+
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+}
+
+.preview-top {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    margin-bottom:
+        13px;
+
+}
+
+.preview-title {
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+}
+
+.preview-info {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+
+/* =====================================================
+   CANVAS STAGE
+===================================================== */
+
+.stage {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    aspect-ratio:
+        9 / 16;
+
+    max-height:
+        calc(100vh - 160px);
+
+    background:
+        #292c31;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        18px;
+
+    overflow:
+        hidden;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin:
+        auto;
+
+    touch-action:
+        none;
+
+    box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.35);
+
+}
+
+
+/* =====================================================
+   CHECKERBOARD
+===================================================== */
+
+.stage::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background-color:
+        #25282d;
+
+    background-image:
+
+        linear-gradient(
+            45deg,
+            #30343a 25%,
+            transparent 25%
+        ),
+
+        linear-gradient(
+            -45deg,
+            #30343a 25%,
+            transparent 25%
+        ),
+
+        linear-gradient(
+            45deg,
+            transparent 75%,
+            #30343a 75%
+        ),
+
+        linear-gradient(
+            -45deg,
+            transparent 75%,
+            #30343a 75%
+        );
+
+    background-size:
+        26px 26px;
+
+    background-position:
+        0 0,
+        0 13px,
+        13px -13px,
+        -13px 0;
+
+}
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+#canvas {
+
+    position:
+        absolute;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    inset:
+        0;
+
+    display:
+        block;
+
+    z-index:
+        2;
+
+    touch-action:
+        none;
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    z-index:
+        20;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    flex-direction:
+        column;
+
+    gap:
+        12px;
+
+    background:
+        rgba(8,9,11,.75);
+
+    backdrop-filter:
+        blur(8px);
+
+}
+
+.loading.hidden {
+
+    display:
+        none;
+
+}
+
+.spinner {
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    border:
+        3px solid
+        #454a52;
+
+    border-top-color:
+        white;
+
+    border-radius:
+        50%;
+
+    animation:
+        spin .8s linear infinite;
+
+}
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+.loading span {
+
+    font-size:
+        12px;
+
+    color:
+        #d5d8dc;
+
+}
+
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty {
+
+    position:
+        absolute;
+
+    z-index:
+        10;
+
+    text-align:
+        center;
+
+    pointer-events:
+        none;
+
+    color:
+        #737982;
+
+}
+
+.empty-icon {
+
+    font-size:
+        32px;
+
+    margin-bottom:
+        10px;
+
+}
+
+.empty strong {
+
+    display:
+        block;
+
+    color:
+        #c3c6cb;
+
+    font-size:
+        13px;
+
+    margin-bottom:
+        5px;
+
+}
+
+.empty span {
+
+    font-size:
+        11px;
+
+}
+
+
+/* =====================================================
+   FULLSCREEN
+===================================================== */
+
+.fullscreen-button {
+
+    position:
+        absolute;
+
+    z-index:
+        10;
+
+    top:
+        14px;
+
+    right:
+        14px;
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.14);
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(0,0,0,.55);
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    backdrop-filter:
+        blur(8px);
+
+}
+
+
+/* =====================================================
+   ZOOM INDICATOR
+===================================================== */
+
+.zoom-indicator {
+
+    position:
+        absolute;
+
+    z-index:
+        10;
+
+    left:
+        14px;
+
+    bottom:
+        14px;
+
+    padding:
+        7px 10px;
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(0,0,0,.55);
+
+    color:
+        #e5e7ea;
+
+    font-size:
+        10px;
+
+    backdrop-filter:
+        blur(8px);
+
+}
+
+
+/* =====================================================
+   RIGHT INFO PANEL
+===================================================== */
+
+.help-item {
+
+    padding:
+        12px
+        0;
+
+    border-bottom:
+        1px solid
+        #24272c;
+
+}
+
+.help-item:last-child {
+
+    border-bottom:
+        none;
+
+}
+
+.help-item strong {
+
+    display:
+        block;
+
+    font-size:
+        12px;
+
+    margin-bottom:
+        5px;
+
+}
+
+.help-item span {
+
+    display:
+        block;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.5;
+
+    color:
+        var(--muted);
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        6px
+        9px;
+
+    background:
+        #191c20;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        8px;
+
+    font-size:
+        10px;
+
+    color:
+        var(--muted);
+
+}
+
+.status-dot {
+
+    width:
+        6px;
+
+    height:
+        6px;
+
+    border-radius:
+        50%;
+
+    background:
+        #555;
+
+}
+
+.status-dot.active {
+
+    background:
+        #71d99a;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .app {
+
+        grid-template-columns:
+            280px
+            minmax(350px,1fr);
+
+    }
+
+    .help-panel {
+
+        display:
+            none;
+
+    }
+
+}
+
+
+@media (max-width: 750px) {
+
+    header {
+
+        padding:
+            18px;
+
+    }
+
+    .header-content {
+
+        justify-content:
+            center;
+
+    }
+
+    .app {
+
+        width:
+            calc(100% - 20px);
+
+        padding-top:
+            15px;
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .controls-panel {
+
+        order:
+            2;
+
+    }
+
+    .preview {
+
+        order:
+            1;
+
+    }
+
+    .stage {
+
+        width:
+            min(
+                100%,
+                430px
+            );
+
+        max-height:
+            none;
+
+    }
+
+    .preview-info {
+
+        display:
+            none;
+
+    }
+
+}
+
+
+/* =====================================================
+   FULLSCREEN MODE
+===================================================== */
+
+.stage.fullscreen {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        9999;
+
+    width:
+        100vw;
+
+    height:
+        100vh;
+
+    max-height:
+        none;
+
+    border-radius:
+        0;
+
+    border:
+        none;
+
+}
+
+</style>
 
 </head>
 
@@ -301,72 +1113,109 @@
 
 <header>
 
-    <h1>Crie sua foto</h1>
+    <div class="header-content">
 
-    <p>
-        Carregue sua foto e ajuste dentro da moldura
-    </p>
+        <div class="logo">
+
+            <div class="logo-icon">
+                📷
+            </div>
+
+            <div class="logo-text">
+
+                <strong>
+                    Editor de Foto
+                </strong>
+
+                <span>
+                    Personalize sua imagem
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </header>
 
 
 
-<div class="app">
+<main class="app">
 
 
-    <!-- =====================================
-         PAINEL DE CONTROLE
-    ====================================== -->
+    <!-- =================================================
+         CONTROLES
+    ================================================== -->
 
-    <div class="panel">
+    <aside class="panel controls-panel">
 
-        <h2>Personalize sua foto</h2>
+        <div class="panel-title">
 
+            <h2>
+                Personalização
+            </h2>
+
+            <span>
+                9:16
+            </span>
+
+        </div>
+
+
+        <!-- UPLOAD -->
 
         <label
-            class="upload-area"
+            class="upload"
             for="photoInput"
         >
 
+            <div class="upload-icon">
+                ↑
+            </div>
+
             <strong>
-                📷 Carregar minha foto
+                Carregar sua foto
             </strong>
 
-            <span>
-                Clique aqui para selecionar uma imagem
-            </span>
+            <small>
+                JPG, PNG ou WEBP
+            </small>
 
         </label>
 
 
         <input
-            type="file"
             id="photoInput"
+            type="file"
             accept="image/jpeg,image/png,image/webp"
         >
+
 
 
         <!-- ZOOM -->
 
         <div class="control">
 
-            <label>
+            <div class="control-header">
 
-                <span>
+                <label>
                     Zoom
-                </span>
+                </label>
 
-                <span id="zoomValue">
+                <span
+                    class="value"
+                    id="zoomValue"
+                >
                     100%
                 </span>
 
-            </label>
-
+            </div>
 
             <input
-                type="range"
                 id="zoom"
-                min="0.5"
+                type="range"
+                min="1"
                 max="4"
                 step="0.01"
                 value="1"
@@ -380,22 +1229,24 @@
 
         <div class="control">
 
-            <label>
+            <div class="control-header">
 
-                <span>
+                <label>
                     Rotação
-                </span>
+                </label>
 
-                <span id="rotationValue">
+                <span
+                    class="value"
+                    id="rotationValue"
+                >
                     0°
                 </span>
 
-            </label>
-
+            </div>
 
             <input
-                type="range"
                 id="rotation"
+                type="range"
                 min="-180"
                 max="180"
                 step="1"
@@ -406,101 +1257,278 @@
 
 
 
-        <div class="buttons">
+        <!-- BOTÕES -->
 
-            <button
-                class="btn-reset"
-                id="resetBtn"
-            >
-                ↺ Restaurar posição
-            </button>
-
-
-            <button
-                class="btn-download"
-                id="downloadBtn"
-            >
-                ↓ Baixar foto final
-            </button>
-
-        </div>
-
-    </div>
+        <button
+            class="button button-secondary"
+            id="centerBtn"
+        >
+            ◎ Centralizar foto
+        </button>
 
 
+        <button
+            class="button button-secondary"
+            id="resetBtn"
+        >
+            ↺ Restaurar ajustes
+        </button>
 
-    <!-- =====================================
-         PREVISUALIZAÇÃO
-    ====================================== -->
 
-    <div class="preview-panel">
+        <button
+            class="button button-primary"
+            id="downloadBtn"
+        >
+            ↓ Baixar imagem final
+        </button>
 
 
-        <div class="preview-header">
+    </aside>
 
-            <h2>
+
+
+    <!-- =================================================
+         PREVIEW
+    ================================================== -->
+
+    <section class="preview">
+
+        <div class="preview-top">
+
+            <div class="preview-title">
                 Pré-visualização
-            </h2>
+            </div>
 
-            <span
+            <div
                 class="status"
                 id="status"
             >
-                Nenhuma foto carregada
-            </span>
+
+                <span
+                    class="status-dot"
+                    id="statusDot"
+                ></span>
+
+                <span id="statusText">
+                    Aguardando foto
+                </span>
+
+            </div>
 
         </div>
 
 
 
-        <div class="canvas-container">
+        <div
+            class="stage"
+            id="stage"
+        >
+
+
+            <!-- LOADING -->
+
+            <div
+                class="loading hidden"
+                id="loading"
+            >
+
+                <div class="spinner"></div>
+
+                <span>
+                    Processando imagem...
+                </span>
+
+            </div>
+
+
+
+            <!-- EMPTY -->
+
+            <div
+                class="empty"
+                id="empty"
+            >
+
+                <div class="empty-icon">
+                    🖼️
+                </div>
+
+                <strong>
+                    Carregue uma foto
+                </strong>
+
+                <span>
+                    Sua imagem aparecerá aqui
+                </span>
+
+            </div>
+
+
+
+            <!-- CANVAS -->
 
             <canvas
                 id="canvas"
             ></canvas>
 
+
+
+            <!-- FULLSCREEN -->
+
+            <button
+                class="fullscreen-button"
+                id="fullscreenBtn"
+                title="Tela cheia"
+            >
+                ⛶
+            </button>
+
+
+
+            <!-- ZOOM -->
+
+            <div
+                class="zoom-indicator"
+                id="zoomIndicator"
+            >
+                Zoom 100%
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         AJUDA
+    ================================================== -->
+
+    <aside class="panel help-panel">
+
+        <div class="panel-title">
+
+            <h2>
+                Como usar
+            </h2>
+
         </div>
 
 
-        <div class="instructions">
+        <div class="help-item">
 
-            Arraste a foto para posicionar •
-            Use o zoom para aproximar ou afastar
+            <strong>
+                🖱️ Arrastar
+            </strong>
+
+            <span>
+                Clique e arraste a foto
+                para posicioná-la.
+            </span>
 
         </div>
 
-    </div>
 
-</div>
+        <div class="help-item">
+
+            <strong>
+                🔍 Zoom
+            </strong>
+
+            <span>
+                Use o controle ou a
+                roda do mouse.
+            </span>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                🤏 Celular
+            </strong>
+
+            <span>
+                Use dois dedos para
+                ampliar ou reduzir.
+            </span>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                ◎ Centralizar
+            </strong>
+
+            <span>
+                Retorna a foto para
+                o centro da área.
+            </span>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                ⛶ Tela cheia
+            </strong>
+
+            <span>
+                Amplie o editor para
+                facilitar o ajuste.
+            </span>
+
+        </div>
+
+
+        <div class="help-item">
+
+            <strong>
+                ↓ Download
+            </strong>
+
+            <span>
+                Gere a imagem final
+                em PNG.
+            </span>
+
+        </div>
+
+    </aside>
+
+
+</main>
 
 
 
 <script>
 
 
-/*
-========================================================
-URL DA MOLDURA
-========================================================
-
-A moldura agora vem diretamente deste endereço.
-*/
+/* =====================================================
+   CONFIGURAÇÃO
+===================================================== */
 
 const FRAME_URL =
-"https://iili.io/CQ3GD9R.md.png";
+"https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png";
 
 
-/*
-========================================================
-ELEMENTOS
-========================================================
-*/
+/* =====================================================
+   ELEMENTOS
+===================================================== */
 
 const canvas =
 document.getElementById("canvas");
 
 const ctx =
 canvas.getContext("2d");
+
+const stage =
+document.getElementById("stage");
 
 const photoInput =
 document.getElementById("photoInput");
@@ -517,77 +1545,97 @@ document.getElementById("zoomValue");
 const rotationValue =
 document.getElementById("rotationValue");
 
+const zoomIndicator =
+document.getElementById("zoomIndicator");
+
+const centerBtn =
+document.getElementById("centerBtn");
+
 const resetBtn =
 document.getElementById("resetBtn");
 
 const downloadBtn =
 document.getElementById("downloadBtn");
 
-const status =
-document.getElementById("status");
+const fullscreenBtn =
+document.getElementById("fullscreenBtn");
+
+const loading =
+document.getElementById("loading");
+
+const empty =
+document.getElementById("empty");
+
+const statusText =
+document.getElementById("statusText");
+
+const statusDot =
+document.getElementById("statusDot");
 
 
-/*
-========================================================
-IMAGENS
-========================================================
-*/
+/* =====================================================
+   IMAGEM DA MOLDURA
+===================================================== */
 
 const frame =
 new Image();
 
-/*
-Permite que o navegador tente carregar
-a imagem externa para uso no canvas.
-*/
+frame.crossOrigin =
+"anonymous";
 
-frame.crossOrigin = "anonymous";
+frame.src =
+FRAME_URL;
 
-frame.src = FRAME_URL;
 
+/* =====================================================
+   ESTADO
+===================================================== */
 
 let photo = null;
-
-
-/*
-========================================================
-POSIÇÃO DA FOTO
-========================================================
-*/
-
-let photoX = 0;
-
-let photoY = 0;
 
 let zoom = 1;
 
 let rotation = 0;
 
+let photoX = 0;
 
-/*
-========================================================
-DRAG
-========================================================
-*/
+let photoY = 0;
+
+
+/* =====================================================
+   DRAG
+===================================================== */
 
 let dragging = false;
 
-let startMouseX = 0;
+let startX = 0;
 
-let startMouseY = 0;
+let startY = 0;
 
 let startPhotoX = 0;
 
 let startPhotoY = 0;
 
 
-/*
-========================================================
-CARREGAMENTO DA MOLDURA
-========================================================
-*/
+/* =====================================================
+   PINCH
+===================================================== */
 
-frame.onload = function () {
+let pinchStartDistance = 0;
+
+let pinchStartZoom = 1;
+
+
+/* =====================================================
+   MOLDURA CARREGADA
+===================================================== */
+
+frame.onload = function() {
+
+    /*
+    O canvas usa exatamente a
+    resolução da moldura.
+    */
 
     canvas.width =
         frame.naturalWidth;
@@ -596,39 +1644,16 @@ frame.onload = function () {
         frame.naturalHeight;
 
 
-    /*
-    Centraliza a foto.
-    */
-
-    photoX =
-        canvas.width / 2;
-
-    photoY =
-        canvas.height / 2;
-
+    centerPhoto();
 
     draw();
 
 };
 
 
-frame.onerror = function () {
-
-    status.textContent =
-        "Erro ao carregar a moldura";
-
-    console.error(
-        "Não foi possível carregar a moldura."
-    );
-
-};
-
-
-/*
-========================================================
-CARREGAR FOTO
-========================================================
-*/
+/* =====================================================
+   CARREGAR FOTO
+===================================================== */
 
 photoInput.addEventListener(
     "change",
@@ -639,6 +1664,9 @@ photoInput.addEventListener(
 
         if (!file)
             return;
+
+
+        showLoading(true);
 
 
         const reader =
@@ -655,47 +1683,61 @@ photoInput.addEventListener(
             img.onload =
             function() {
 
-                photo = img;
+                photo =
+                    img;
 
 
-                /*
-                ======================================
-                POSIÇÃO INICIAL
-                ======================================
-                */
-
-                photoX =
-                    canvas.width / 2;
-
-                photoY =
-                    canvas.height / 2;
+                zoom =
+                    1;
 
 
-                /*
-                ======================================
-                ZOOM INICIAL
-                ======================================
-                */
-
-                zoom = 1;
-
-                rotation = 0;
+                rotation =
+                    0;
 
 
                 zoomControl.value =
-                    zoom;
+                    1;
+
 
                 rotationControl.value =
-                    rotation;
+                    0;
 
 
-                status.textContent =
+                centerPhoto();
+
+
+                empty.style.display =
+                    "none";
+
+
+                statusText.textContent =
                     "Foto carregada";
 
 
-                updateLabels();
+                statusDot.classList.add(
+                    "active"
+                );
+
+
+                updateUI();
+
 
                 draw();
+
+
+                showLoading(false);
+
+            };
+
+
+            img.onerror =
+            function() {
+
+                showLoading(false);
+
+                alert(
+                    "Não foi possível carregar esta imagem."
+                );
 
             };
 
@@ -712,22 +1754,199 @@ photoInput.addEventListener(
 );
 
 
-/*
-========================================================
-DESENHAR COMPOSIÇÃO
-========================================================
-*/
+/* =====================================================
+   CENTRALIZAR
+===================================================== */
+
+function centerPhoto() {
+
+    photoX =
+        canvas.width / 2;
+
+    photoY =
+        canvas.height / 2;
+
+}
+
+
+/* =====================================================
+   ESCALA BASE
+===================================================== */
+
+function getBaseScale() {
+
+    if (!photo)
+        return 1;
+
+
+    const scaleX =
+        canvas.width /
+        photo.width;
+
+
+    const scaleY =
+        canvas.height /
+        photo.height;
+
+
+    /*
+    "cover":
+
+    A foto sempre cobre
+    toda a área vertical.
+    */
+
+    return Math.max(
+        scaleX,
+        scaleY
+    );
+
+}
+
+
+/* =====================================================
+   LIMITAR POSIÇÃO
+===================================================== */
+
+function constrainPhoto() {
+
+    if (!photo)
+        return;
+
+
+    const scale =
+        getBaseScale() *
+        zoom;
+
+
+    const width =
+        photo.width *
+        scale;
+
+
+    const height =
+        photo.height *
+        scale;
+
+
+    /*
+    =================================================
+    LIMITES
+
+    Impedimos que a imagem seja arrastada
+    de forma que surja um espaço vazio
+    dentro da área de edição.
+    =================================================
+    */
+
+    const halfW =
+        width / 2;
+
+
+    const halfH =
+        height / 2;
+
+
+    const centerX =
+        canvas.width / 2;
+
+
+    const centerY =
+        canvas.height / 2;
+
+
+    const minX =
+        centerX -
+        Math.max(
+            0,
+            halfW -
+            canvas.width / 2
+        );
+
+
+    const maxX =
+        centerX +
+        Math.max(
+            0,
+            halfW -
+            canvas.width / 2
+        );
+
+
+    const minY =
+        centerY -
+        Math.max(
+            0,
+            halfH -
+            canvas.height / 2
+        );
+
+
+    const maxY =
+        centerY +
+        Math.max(
+            0,
+            halfH -
+            canvas.height / 2
+        );
+
+
+    /*
+    Quando a foto é maior que o canvas,
+    limita a posição.
+
+    Quando ela é menor, mantém centralizada.
+    */
+
+    if (width >= canvas.width) {
+
+        photoX =
+            Math.max(
+                minX,
+                Math.min(
+                    maxX,
+                    photoX
+                )
+            );
+
+    } else {
+
+        photoX =
+            centerX;
+
+    }
+
+
+    if (height >= canvas.height) {
+
+        photoY =
+            Math.max(
+                minY,
+                Math.min(
+                    maxY,
+                    photoY
+                )
+            );
+
+    } else {
+
+        photoY =
+            centerY;
+
+    }
+
+}
+
+
+/* =====================================================
+   DESENHAR
+===================================================== */
 
 function draw() {
-
 
     if (!frame.complete)
         return;
 
-
-    /*
-    Limpa canvas
-    */
 
     ctx.clearRect(
         0,
@@ -738,19 +1957,56 @@ function draw() {
 
 
     /*
-    ====================================================
-    FOTO DO USUÁRIO
-    ====================================================
+    =================================================
+    ÁREA DE RECORTE
+    =================================================
+    */
+
+    ctx.save();
+
+
+    /*
+    O recorte é exatamente
+    o canvas 9:16.
+    */
+
+    ctx.beginPath();
+
+    ctx.rect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.clip();
+
+
+    /*
+    =================================================
+    FOTO
+    =================================================
     */
 
     if (photo) {
 
+        const scale =
+            getBaseScale() *
+            zoom;
+
+
+        const width =
+            photo.width *
+            scale;
+
+
+        const height =
+            photo.height *
+            scale;
+
+
         ctx.save();
 
-
-        /*
-        Move para o centro da foto
-        */
 
         ctx.translate(
             photoX,
@@ -758,59 +2014,12 @@ function draw() {
         );
 
 
-        /*
-        Rotação
-        */
-
         ctx.rotate(
             rotation *
             Math.PI /
             180
         );
 
-
-        /*
-        =================================================
-        ESCALA
-
-        Faz a foto cobrir todo o canvas.
-        =================================================
-        */
-
-        const scaleX =
-            canvas.width /
-            photo.width;
-
-        const scaleY =
-            canvas.height /
-            photo.height;
-
-
-        const baseScale =
-            Math.max(
-                scaleX,
-                scaleY
-            );
-
-
-        const finalScale =
-            baseScale *
-            zoom;
-
-
-        const width =
-            photo.width *
-            finalScale;
-
-
-        const height =
-            photo.height *
-            finalScale;
-
-
-        /*
-        Desenha centralizada
-        */
 
         ctx.drawImage(
             photo,
@@ -828,18 +2037,18 @@ function draw() {
     }
 
 
+    ctx.restore();
+
+
     /*
-    ====================================================
+    =================================================
     MOLDURA
-    ====================================================
+    =================================================
 
-    ESTA É A PARTE MAIS IMPORTANTE.
+    SEMPRE POR ÚLTIMO.
 
-    A moldura é desenhada DEPOIS da fotografia.
-
-    Portanto todos os elementos da moldura ficam
-    visualmente sobre a fotografia.
-    ====================================================
+    A moldura fica acima
+    da fotografia.
     */
 
     ctx.drawImage(
@@ -855,11 +2064,9 @@ function draw() {
 }
 
 
-/*
-========================================================
-ZOOM
-========================================================
-*/
+/* =====================================================
+   ZOOM SLIDER
+===================================================== */
 
 zoomControl.addEventListener(
     "input",
@@ -870,7 +2077,10 @@ zoomControl.addEventListener(
                 this.value
             );
 
-        updateLabels();
+
+        constrainPhoto();
+
+        updateUI();
 
         draw();
 
@@ -878,11 +2088,9 @@ zoomControl.addEventListener(
 );
 
 
-/*
-========================================================
-ROTAÇÃO
-========================================================
-*/
+/* =====================================================
+   ROTAÇÃO
+===================================================== */
 
 rotationControl.addEventListener(
     "input",
@@ -893,7 +2101,8 @@ rotationControl.addEventListener(
                 this.value
             );
 
-        updateLabels();
+
+        updateUI();
 
         draw();
 
@@ -901,33 +2110,59 @@ rotationControl.addEventListener(
 );
 
 
-/*
-========================================================
-ATUALIZAR INDICADORES
-========================================================
-*/
+/* =====================================================
+   RODA DO MOUSE
+===================================================== */
 
-function updateLabels() {
+stage.addEventListener(
+    "wheel",
+    function(event) {
 
-    zoomValue.textContent =
-        Math.round(
-            zoom * 100
-        ) + "%";
+        if (!photo)
+            return;
 
 
-    rotationValue.textContent =
-        rotation + "°";
-
-}
+        event.preventDefault();
 
 
-/*
-========================================================
-ARRASTAR COM MOUSE
-========================================================
-*/
+        const delta =
+            event.deltaY > 0
+                ? -0.08
+                : 0.08;
 
-canvas.addEventListener(
+
+        zoom =
+            Math.min(
+                4,
+                Math.max(
+                    1,
+                    zoom + delta
+                )
+            );
+
+
+        zoomControl.value =
+            zoom;
+
+
+        constrainPhoto();
+
+        updateUI();
+
+        draw();
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/* =====================================================
+   MOUSE DOWN
+===================================================== */
+
+stage.addEventListener(
     "mousedown",
     function(event) {
 
@@ -938,10 +2173,10 @@ canvas.addEventListener(
         dragging = true;
 
 
-        startMouseX =
+        startX =
             event.clientX;
 
-        startMouseY =
+        startY =
             event.clientY;
 
 
@@ -951,9 +2186,17 @@ canvas.addEventListener(
         startPhotoY =
             photoY;
 
+
+        canvas.style.cursor =
+            "grabbing";
+
     }
 );
 
+
+/* =====================================================
+   MOUSE MOVE
+===================================================== */
 
 window.addEventListener(
     "mousemove",
@@ -977,33 +2220,35 @@ window.addEventListener(
             rect.height;
 
 
-        const deltaX =
-            (event.clientX -
-             startMouseX)
-            * scaleX;
-
-
-        const deltaY =
-            (event.clientY -
-             startMouseY)
-            * scaleY;
-
-
         photoX =
             startPhotoX +
-            deltaX;
+            (
+                event.clientX -
+                startX
+            ) *
+            scaleX;
 
 
         photoY =
             startPhotoY +
-            deltaY;
+            (
+                event.clientY -
+                startY
+            ) *
+            scaleY;
 
+
+        constrainPhoto();
 
         draw();
 
     }
 );
 
+
+/* =====================================================
+   MOUSE UP
+===================================================== */
 
 window.addEventListener(
     "mouseup",
@@ -1011,17 +2256,18 @@ window.addEventListener(
 
         dragging = false;
 
+        canvas.style.cursor =
+            "grab";
+
     }
 );
 
 
-/*
-========================================================
-TOUCH / CELULAR
-========================================================
-*/
+/* =====================================================
+   TOUCH
+===================================================== */
 
-canvas.addEventListener(
+stage.addEventListener(
     "touchstart",
     function(event) {
 
@@ -1029,83 +2275,188 @@ canvas.addEventListener(
             return;
 
 
-        const touch =
-            event.touches[0];
+        /*
+        PINCH
+        */
+
+        if (
+            event.touches.length === 2
+        ) {
+
+            pinchStartDistance =
+                getTouchDistance(
+                    event.touches
+                );
 
 
-        dragging = true;
+            pinchStartZoom =
+                zoom;
+
+            return;
+
+        }
 
 
-        startMouseX =
-            touch.clientX;
+        /*
+        DRAG
+        */
 
-        startMouseY =
-            touch.clientY;
+        if (
+            event.touches.length === 1
+        ) {
+
+            const touch =
+                event.touches[0];
 
 
-        startPhotoX =
-            photoX;
+            dragging = true;
 
-        startPhotoY =
-            photoY;
+
+            startX =
+                touch.clientX;
+
+            startY =
+                touch.clientY;
+
+
+            startPhotoX =
+                photoX;
+
+            startPhotoY =
+                photoY;
+
+        }
 
     },
     {
-        passive: true
+        passive: false
     }
 );
 
 
-canvas.addEventListener(
+/* =====================================================
+   TOUCH MOVE
+===================================================== */
+
+stage.addEventListener(
     "touchmove",
     function(event) {
 
-        if (!dragging)
+        if (!photo)
             return;
 
 
-        const touch =
-            event.touches[0];
+        event.preventDefault();
 
 
-        const rect =
-            canvas.getBoundingClientRect();
+        /*
+        PINCH ZOOM
+        */
+
+        if (
+            event.touches.length === 2
+        ) {
+
+            const distance =
+                getTouchDistance(
+                    event.touches
+                );
 
 
-        const scaleX =
-            canvas.width /
-            rect.width;
+            const factor =
+                distance /
+                pinchStartDistance;
 
 
-        const scaleY =
-            canvas.height /
-            rect.height;
+            zoom =
+                Math.min(
+                    4,
+                    Math.max(
+                        1,
+                        pinchStartZoom *
+                        factor
+                    )
+                );
 
 
-        photoX =
-            startPhotoX +
-            (touch.clientX -
-             startMouseX) *
-            scaleX;
+            zoomControl.value =
+                zoom;
 
 
-        photoY =
-            startPhotoY +
-            (touch.clientY -
-             startMouseY) *
-            scaleY;
+            constrainPhoto();
+
+            updateUI();
+
+            draw();
+
+            return;
+
+        }
 
 
-        draw();
+        /*
+        ARRASTAR
+        */
+
+        if (
+            dragging &&
+            event.touches.length === 1
+        ) {
+
+            const touch =
+                event.touches[0];
+
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+
+            const scaleX =
+                canvas.width /
+                rect.width;
+
+
+            const scaleY =
+                canvas.height /
+                rect.height;
+
+
+            photoX =
+                startPhotoX +
+                (
+                    touch.clientX -
+                    startX
+                ) *
+                scaleX;
+
+
+            photoY =
+                startPhotoY +
+                (
+                    touch.clientY -
+                    startY
+                ) *
+                scaleY;
+
+
+            constrainPhoto();
+
+            draw();
+
+        }
 
     },
     {
-        passive: true
+        passive: false
     }
 );
 
 
-canvas.addEventListener(
+/* =====================================================
+   TOUCH END
+===================================================== */
+
+stage.addEventListener(
     "touchend",
     function() {
 
@@ -1115,40 +2466,39 @@ canvas.addEventListener(
 );
 
 
-/*
-========================================================
-RESTAURAR
-========================================================
-*/
+/* =====================================================
+   DISTÂNCIA DOS DEDOS
+===================================================== */
 
-resetBtn.addEventListener(
+function getTouchDistance(touches) {
+
+    const dx =
+        touches[0].clientX -
+        touches[1].clientX;
+
+
+    const dy =
+        touches[0].clientY -
+        touches[1].clientY;
+
+
+    return Math.sqrt(
+        dx * dx +
+        dy * dy
+    );
+
+}
+
+
+/* =====================================================
+   CENTRALIZAR
+===================================================== */
+
+centerBtn.addEventListener(
     "click",
     function() {
 
-        if (!photo)
-            return;
-
-
-        zoom = 1;
-
-        rotation = 0;
-
-
-        photoX =
-            canvas.width / 2;
-
-        photoY =
-            canvas.height / 2;
-
-
-        zoomControl.value =
-            zoom;
-
-        rotationControl.value =
-            rotation;
-
-
-        updateLabels();
+        centerPhoto();
 
         draw();
 
@@ -1156,11 +2506,149 @@ resetBtn.addEventListener(
 );
 
 
-/*
-========================================================
-DOWNLOAD
-========================================================
-*/
+/* =====================================================
+   RESET
+===================================================== */
+
+resetBtn.addEventListener(
+    "click",
+    function() {
+
+        zoom = 1;
+
+        rotation = 0;
+
+        zoomControl.value =
+            1;
+
+        rotationControl.value =
+            0;
+
+
+        centerPhoto();
+
+        updateUI();
+
+        draw();
+
+    }
+);
+
+
+/* =====================================================
+   FULLSCREEN
+===================================================== */
+
+fullscreenBtn.addEventListener(
+    "click",
+    function() {
+
+        stage.classList.toggle(
+            "fullscreen"
+        );
+
+
+        if (
+            stage.classList.contains(
+                "fullscreen"
+            )
+        ) {
+
+            fullscreenBtn.textContent =
+                "✕";
+
+        } else {
+
+            fullscreenBtn.textContent =
+                "⛶";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ATALHOS
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        /*
+        ESC
+        */
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            stage.classList.remove(
+                "fullscreen"
+            );
+
+            fullscreenBtn.textContent =
+                "⛶";
+
+        }
+
+
+        /*
+        + / -
+        */
+
+        if (
+            event.key === "+" ||
+            event.key === "="
+        ) {
+
+            zoom =
+                Math.min(
+                    4,
+                    zoom + .1
+                );
+
+            zoomControl.value =
+                zoom;
+
+            constrainPhoto();
+
+            updateUI();
+
+            draw();
+
+        }
+
+
+        if (
+            event.key === "-"
+        ) {
+
+            zoom =
+                Math.max(
+                    1,
+                    zoom - .1
+                );
+
+            zoomControl.value =
+                zoom;
+
+            constrainPhoto();
+
+            updateUI();
+
+            draw();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DOWNLOAD
+===================================================== */
 
 downloadBtn.addEventListener(
     "click",
@@ -1169,7 +2657,7 @@ downloadBtn.addEventListener(
         if (!photo) {
 
             alert(
-                "Primeiro carregue sua foto."
+                "Carregue uma foto primeiro."
             );
 
             return;
@@ -1177,91 +2665,144 @@ downloadBtn.addEventListener(
         }
 
 
+        showLoading(true);
+
+
         /*
-        =================================================
-        EXPORTAÇÃO
-
-        O canvas já contém:
-
-        CAMADA 1 → Foto do usuário
-        CAMADA 2 → Moldura PNG
-
-        Portanto exportamos o canvas inteiro.
-        =================================================
+        Pequeno atraso para permitir
+        que o indicador de carregamento
+        apareça antes da exportação.
         */
 
+        setTimeout(
+            function() {
 
-        canvas.toBlob(
-            function(blob) {
+                canvas.toBlob(
+                    function(blob) {
 
-                if (!blob) {
+                        if (!blob) {
 
-                    alert(
-                        "Não foi possível gerar a imagem."
-                    );
+                            showLoading(false);
 
-                    return;
+                            alert(
+                                "Não foi possível gerar a imagem."
+                            );
 
-                }
+                            return;
 
-
-                const url =
-                    URL.createObjectURL(
-                        blob
-                    );
+                        }
 
 
-                const link =
-                    document.createElement(
-                        "a"
-                    );
+                        const url =
+                            URL.createObjectURL(
+                                blob
+                            );
 
 
-                link.href =
-                    url;
+                        const link =
+                            document.createElement(
+                                "a"
+                            );
 
 
-                link.download =
-                    "eu-voto-foto.png";
+                        link.href =
+                            url;
 
 
-                document.body.appendChild(
-                    link
-                );
+                        link.download =
+                            "foto-final.png";
 
 
-                link.click();
+                        document.body.appendChild(
+                            link
+                        );
 
 
-                document.body.removeChild(
-                    link
-                );
+                        link.click();
 
 
-                URL.revokeObjectURL(
-                    url
+                        link.remove();
+
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+
+                        showLoading(false);
+
+                    },
+                    "image/png"
                 );
 
             },
-
-            "image/png"
-
+            150
         );
 
     }
 );
 
 
-/*
-========================================================
-INICIALIZAÇÃO
-========================================================
-*/
+/* =====================================================
+   INTERFACE
+===================================================== */
 
-updateLabels();
+function updateUI() {
+
+    const percentage =
+        Math.round(
+            zoom * 100
+        );
+
+
+    zoomValue.textContent =
+        percentage + "%";
+
+
+    zoomIndicator.textContent =
+        "Zoom " +
+        percentage +
+        "%";
+
+
+    rotationValue.textContent =
+        rotation +
+        "°";
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function showLoading(show) {
+
+    if (show) {
+
+        loading.classList.remove(
+            "hidden"
+        );
+
+    } else {
+
+        loading.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+updateUI();
 
 </script>
 
 </body>
-
 </html>
+```
