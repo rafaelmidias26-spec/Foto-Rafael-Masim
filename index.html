@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -11,9 +10,19 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 >
 
+<meta
+    name="theme-color"
+    content="#08090b"
+>
+
 <title>Editor de Foto</title>
 
+
 <style>
+
+/* =====================================================
+   RESET
+===================================================== */
 
 * {
     box-sizing: border-box;
@@ -21,23 +30,10 @@
     padding: 0;
 }
 
-:root {
-
-    --bg: #08090b;
-    --panel: #111317;
-    --panel2: #17191e;
-    --border: #292d34;
-    --text: #f4f4f5;
-    --muted: #858b95;
-
-}
-
 html,
 body {
-
     width: 100%;
     min-height: 100%;
-
 }
 
 body {
@@ -47,17 +43,56 @@ body {
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        Roboto,
         Arial,
         sans-serif;
 
     background:
-        var(--bg);
+        #08090b;
 
     color:
-        var(--text);
+        #f4f4f5;
 
     overflow-x:
         hidden;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
+}
+
+
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
+
+:root {
+
+    --bg:
+        #08090b;
+
+    --panel:
+        #111317;
+
+    --panel-hover:
+        #181b20;
+
+    --border:
+        #292d34;
+
+    --text:
+        #f4f4f5;
+
+    --muted:
+        #858b95;
+
+    --accent:
+        #ffffff;
 
 }
 
@@ -72,7 +107,7 @@ header {
         100%;
 
     padding:
-        24px 28px 18px;
+        22px 28px 18px;
 
     border-bottom:
         1px solid var(--border);
@@ -81,14 +116,17 @@ header {
         rgba(8,9,11,.94);
 
     backdrop-filter:
-        blur(15px);
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
 
 }
 
 .header-content {
 
-    max-width:
-        1400px;
+    width:
+        min(1400px, 100%);
 
     margin:
         auto;
@@ -153,6 +191,9 @@ header {
     font-size:
         17px;
 
+    line-height:
+        1.2;
+
 }
 
 .logo-text span {
@@ -173,7 +214,7 @@ header {
 
 
 /* =====================================================
-   LAYOUT
+   LAYOUT PRINCIPAL
 ===================================================== */
 
 .app {
@@ -259,6 +300,12 @@ header {
 
 .upload {
 
+    width:
+        100%;
+
+    min-height:
+        120px;
+
     border:
         1px dashed #3b4049;
 
@@ -266,13 +313,25 @@ header {
         14px;
 
     padding:
-        25px 15px;
+        20px 15px;
 
     text-align:
         center;
 
     cursor:
         pointer;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
 
     transition:
         .2s;
@@ -282,10 +341,17 @@ header {
 .upload:hover {
 
     background:
-        #191c21;
+        var(--panel-hover);
 
     border-color:
         #777d87;
+
+}
+
+.upload:active {
+
+    transform:
+        scale(.99);
 
 }
 
@@ -367,6 +433,9 @@ header {
     display:
         flex;
 
+    align-items:
+        center;
+
     justify-content:
         space-between;
 
@@ -395,10 +464,18 @@ header {
 
 }
 
+
+/* =====================================================
+   SLIDER
+===================================================== */
+
 input[type="range"] {
 
     width:
         100%;
+
+    height:
+        24px;
 
     accent-color:
         white;
@@ -418,6 +495,9 @@ input[type="range"] {
     width:
         100%;
 
+    min-height:
+        46px;
+
     border:
         none;
 
@@ -425,7 +505,7 @@ input[type="range"] {
         11px;
 
     padding:
-        13px;
+        12px;
 
     margin-top:
         10px;
@@ -442,12 +522,22 @@ input[type="range"] {
     transition:
         .18s;
 
+    touch-action:
+        manipulation;
+
 }
 
 .button:hover {
 
     transform:
         translateY(-1px);
+
+}
+
+.button:active {
+
+    transform:
+        scale(.98);
 
 }
 
@@ -480,7 +570,7 @@ input[type="range"] {
 
 
 /* =====================================================
-   PREVIEW
+   ÁREA DE PRÉ-VISUALIZAÇÃO
 ===================================================== */
 
 .preview {
@@ -549,7 +639,7 @@ input[type="range"] {
         9 / 16;
 
     max-height:
-        calc(100vh - 160px);
+        calc(100vh - 150px);
 
     background:
         #292c31;
@@ -579,13 +669,14 @@ input[type="range"] {
         none;
 
     box-shadow:
-        0 30px 80px rgba(0,0,0,.35);
+        0 30px 80px
+        rgba(0,0,0,.38);
 
 }
 
 
 /* =====================================================
-   CHECKERBOARD
+   FUNDO QUADRICULADO
 ===================================================== */
 
 .stage::before {
@@ -670,6 +761,12 @@ input[type="range"] {
     cursor:
         grab;
 
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
+
 }
 
 #canvas:active {
@@ -681,94 +778,7 @@ input[type="range"] {
 
 
 /* =====================================================
-   LOADING
-===================================================== */
-
-.loading {
-
-    position:
-        absolute;
-
-    inset:
-        0;
-
-    z-index:
-        20;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    flex-direction:
-        column;
-
-    gap:
-        12px;
-
-    background:
-        rgba(8,9,11,.75);
-
-    backdrop-filter:
-        blur(8px);
-
-}
-
-.loading.hidden {
-
-    display:
-        none;
-
-}
-
-.spinner {
-
-    width:
-        34px;
-
-    height:
-        34px;
-
-    border:
-        3px solid #454a52;
-
-    border-top-color:
-        white;
-
-    border-radius:
-        50%;
-
-    animation:
-        spin .8s linear infinite;
-
-}
-
-@keyframes spin {
-
-    to {
-        transform:
-            rotate(360deg);
-    }
-
-}
-
-.loading span {
-
-    font-size:
-        12px;
-
-    color:
-        #d5d8dc;
-
-}
-
-
-/* =====================================================
-   EMPTY
+   ESTADO VAZIO
 ===================================================== */
 
 .empty {
@@ -777,7 +787,7 @@ input[type="range"] {
         absolute;
 
     z-index:
-        10;
+        5;
 
     text-align:
         center;
@@ -787,6 +797,9 @@ input[type="range"] {
 
     color:
         #737982;
+
+    padding:
+        20px;
 
 }
 
@@ -825,7 +838,97 @@ input[type="range"] {
 
 
 /* =====================================================
-   FULLSCREEN
+   LOADING
+===================================================== */
+
+.loading {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    z-index:
+        20;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    flex-direction:
+        column;
+
+    gap:
+        12px;
+
+    background:
+        rgba(8,9,11,.78);
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+}
+
+.loading.hidden {
+
+    display:
+        none;
+
+}
+
+.spinner {
+
+    width:
+        36px;
+
+    height:
+        36px;
+
+    border:
+        3px solid #454a52;
+
+    border-top-color:
+        white;
+
+    border-radius:
+        50%;
+
+    animation:
+        spin .8s linear infinite;
+
+}
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+.loading span {
+
+    font-size:
+        12px;
+
+    color:
+        #d5d8dc;
+
+}
+
+
+/* =====================================================
+   BOTÃO FULLSCREEN
 ===================================================== */
 
 .fullscreen-button {
@@ -843,13 +946,14 @@ input[type="range"] {
         14px;
 
     width:
-        38px;
+        40px;
 
     height:
-        38px;
+        40px;
 
     border:
-        1px solid rgba(255,255,255,.14);
+        1px solid
+        rgba(255,255,255,.15);
 
     border-radius:
         10px;
@@ -866,11 +970,17 @@ input[type="range"] {
     backdrop-filter:
         blur(8px);
 
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    touch-action:
+        manipulation;
+
 }
 
 
 /* =====================================================
-   ZOOM
+   INDICADOR DE ZOOM
 ===================================================== */
 
 .zoom-indicator {
@@ -905,56 +1015,8 @@ input[type="range"] {
     backdrop-filter:
         blur(8px);
 
-}
-
-
-/* =====================================================
-   AJUDA
-===================================================== */
-
-.help-item {
-
-    padding:
-        12px 0;
-
-    border-bottom:
-        1px solid #24272c;
-
-}
-
-.help-item:last-child {
-
-    border-bottom:
-        none;
-
-}
-
-.help-item strong {
-
-    display:
-        block;
-
-    font-size:
-        12px;
-
-    margin-bottom:
-        5px;
-
-}
-
-.help-item span {
-
-    display:
-        block;
-
-    font-size:
-        10px;
-
-    line-height:
-        1.5;
-
-    color:
-        var(--muted);
+    -webkit-backdrop-filter:
+        blur(8px);
 
 }
 
@@ -1019,15 +1081,437 @@ input[type="range"] {
 
 
 /* =====================================================
-   MOBILE
+   PAINEL DE AJUDA
 ===================================================== */
 
-@media (max-width:1100px) {
+.help-item {
+
+    padding:
+        12px 0;
+
+    border-bottom:
+        1px solid #24272c;
+
+}
+
+.help-item:last-child {
+
+    border-bottom:
+        none;
+
+}
+
+.help-item strong {
+
+    display:
+        block;
+
+    font-size:
+        12px;
+
+    margin-bottom:
+        5px;
+
+}
+
+.help-item span {
+
+    display:
+        block;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.5;
+
+    color:
+        var(--muted);
+
+}
+
+
+/* =====================================================
+   TABLET / TELAS MÉDIAS
+===================================================== */
+
+@media (max-width: 1100px) {
 
     .app {
 
+        width:
+            min(960px, calc(100% - 32px));
+
         grid-template-columns:
-            280px minmax(350px,1fr);
+            270px minmax(320px, 1fr);
+
+        gap:
+            18px;
+
+    }
+
+    .help-panel {
+
+        display:
+            none;
+
+    }
+
+    .stage {
+
+        max-height:
+            calc(100vh - 150px);
+
+    }
+
+}
+
+
+/* =====================================================
+   TABLET RETRATO
+===================================================== */
+
+@media (max-width: 850px) {
+
+    header {
+
+        padding:
+            16px 20px;
+
+    }
+
+    .app {
+
+        width:
+            min(700px, calc(100% - 28px));
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            18px;
+
+        padding-top:
+            18px;
+
+    }
+
+    .preview {
+
+        order:
+            1;
+
+    }
+
+    .controls-panel {
+
+        order:
+            2;
+
+    }
+
+    .stage {
+
+        width:
+            min(100%, 500px);
+
+        max-height:
+            none;
+
+    }
+
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media (max-width: 600px) {
+
+    header {
+
+        padding:
+            14px 16px;
+
+    }
+
+    .app {
+
+        width:
+            100%;
+
+        padding:
+            10px 10px 25px;
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        gap:
+            14px;
+
+    }
+
+    .preview {
+
+        order:
+            1;
+
+        width:
+            100%;
+
+    }
+
+    .controls-panel {
+
+        order:
+            2;
+
+    }
+
+    .preview-top {
+
+        padding:
+            0 4px;
+
+        margin-bottom:
+            9px;
+
+    }
+
+    .preview-title {
+
+        font-size:
+            13px;
+
+    }
+
+    .preview-info {
+
+        display:
+            none;
+
+    }
+
+    .status {
+
+        font-size:
+            9px;
+
+        padding:
+            5px 7px;
+
+    }
+
+    /*
+    ================================================
+    9:16 EXATO
+    ================================================
+    */
+
+    .stage {
+
+        width:
+            100%;
+
+        height:
+            auto;
+
+        aspect-ratio:
+            9 / 16;
+
+        max-height:
+            none;
+
+        border-radius:
+            14px;
+
+        box-shadow:
+            0 15px 40px
+            rgba(0,0,0,.42);
+
+    }
+
+    .fullscreen-button {
+
+        width:
+            42px;
+
+        height:
+            42px;
+
+        top:
+            10px;
+
+        right:
+            10px;
+
+        border-radius:
+            11px;
+
+        font-size:
+            17px;
+
+    }
+
+    .zoom-indicator {
+
+        left:
+            10px;
+
+        bottom:
+            10px;
+
+        padding:
+            6px 8px;
+
+    }
+
+    .panel {
+
+        border-radius:
+            14px;
+
+        padding:
+            16px;
+
+    }
+
+    .panel-title {
+
+        margin-bottom:
+            15px;
+
+    }
+
+    .upload {
+
+        min-height:
+            105px;
+
+    }
+
+    input[type="range"] {
+
+        height:
+            30px;
+
+    }
+
+    .button {
+
+        min-height:
+            50px;
+
+        font-size:
+            13px;
+
+    }
+
+}
+
+
+/* =====================================================
+   CELULAR PEQUENO
+===================================================== */
+
+@media (max-width: 380px) {
+
+    .app {
+
+        padding:
+            8px 8px 20px;
+
+    }
+
+    .stage {
+
+        border-radius:
+            11px;
+
+    }
+
+    .panel {
+
+        padding:
+            13px;
+
+    }
+
+    .upload {
+
+        min-height:
+            95px;
+
+    }
+
+    .control {
+
+        margin-top:
+            18px;
+
+    }
+
+}
+
+
+/* =====================================================
+   CELULAR PAISAGEM
+===================================================== */
+
+@media (
+    max-height: 600px
+) and (
+    orientation: landscape
+) {
+
+    .app {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            minmax(250px, 320px)
+            minmax(240px, 1fr);
+
+        align-items:
+            start;
+
+        width:
+            calc(100% - 20px);
+
+    }
+
+    .preview {
+
+        order:
+            1;
+
+    }
+
+    .controls-panel {
+
+        order:
+            2;
+
+    }
+
+    .stage {
+
+        height:
+            calc(100vh - 100px);
+
+        width:
+            auto;
+
+        max-height:
+            calc(100vh - 100px);
+
+        aspect-ratio:
+            9 / 16;
 
     }
 
@@ -1041,49 +1525,22 @@ input[type="range"] {
 }
 
 
-@media (max-width:750px) {
+/* =====================================================
+   TABLET PAISAGEM
+===================================================== */
 
-    header {
-
-        padding:
-            18px;
-
-    }
-
-    .app {
-
-        width:
-            calc(100% - 20px);
-
-        padding-top:
-            15px;
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-    .controls-panel {
-
-        order:
-            2;
-
-    }
-
-    .preview {
-
-        order:
-            1;
-
-    }
+@media (
+    min-width: 601px
+) and (
+    max-width: 1100px
+) and (
+    orientation: landscape
+) {
 
     .stage {
 
-        width:
-            min(100%,430px);
-
         max-height:
-            none;
+            calc(100vh - 120px);
 
     }
 
@@ -1130,6 +1587,10 @@ input[type="range"] {
 <body>
 
 
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
 <header>
 
     <div class="header-content">
@@ -1160,12 +1621,16 @@ input[type="range"] {
 
 
 
+<!-- =====================================================
+     APLICAÇÃO
+===================================================== -->
+
 <main class="app">
 
 
-<!-- ==================================================
+<!-- =====================================================
      CONTROLES
-=================================================== -->
+===================================================== -->
 
 <aside class="panel controls-panel">
 
@@ -1181,6 +1646,8 @@ input[type="range"] {
 
     </div>
 
+
+    <!-- UPLOAD -->
 
     <label
         class="upload"
@@ -1209,7 +1676,9 @@ input[type="range"] {
     >
 
 
-    <!-- ZOOM -->
+    <!-- =================================================
+         ZOOM
+    ================================================== -->
 
     <div class="control">
 
@@ -1240,7 +1709,9 @@ input[type="range"] {
     </div>
 
 
-    <!-- ROTAÇÃO -->
+    <!-- =================================================
+         ROTAÇÃO
+    ================================================== -->
 
     <div class="control">
 
@@ -1271,6 +1742,10 @@ input[type="range"] {
     </div>
 
 
+    <!-- =================================================
+         BOTÕES
+    ================================================== -->
+
     <button
         class="button button-secondary"
         id="centerBtn"
@@ -1298,17 +1773,19 @@ input[type="range"] {
 
 
 
-<!-- ==================================================
-     PREVIEW
-=================================================== -->
+<!-- =====================================================
+     PRÉ-VISUALIZAÇÃO
+===================================================== -->
 
 <section class="preview">
+
 
     <div class="preview-top">
 
         <div class="preview-title">
             Pré-visualização
         </div>
+
 
         <div
             class="status"
@@ -1329,10 +1806,18 @@ input[type="range"] {
     </div>
 
 
+
+    <!-- =================================================
+         STAGE
+    ================================================== -->
+
     <div
         class="stage"
         id="stage"
     >
+
+
+        <!-- LOADING -->
 
         <div
             class="loading hidden"
@@ -1347,6 +1832,8 @@ input[type="range"] {
 
         </div>
 
+
+        <!-- EMPTY -->
 
         <div
             class="empty"
@@ -1368,19 +1855,26 @@ input[type="range"] {
         </div>
 
 
+        <!-- CANVAS -->
+
         <canvas
             id="canvas"
         ></canvas>
 
 
+        <!-- FULLSCREEN -->
+
         <button
             class="fullscreen-button"
             id="fullscreenBtn"
             title="Tela cheia"
+            aria-label="Tela cheia"
         >
             ⛶
         </button>
 
+
+        <!-- ZOOM INDICATOR -->
 
         <div
             class="zoom-indicator"
@@ -1395,9 +1889,9 @@ input[type="range"] {
 
 
 
-<!-- ==================================================
+<!-- =====================================================
      AJUDA
-=================================================== -->
+===================================================== -->
 
 <aside class="panel help-panel">
 
@@ -1431,8 +1925,8 @@ input[type="range"] {
         </strong>
 
         <span>
-            Use o controle ou a
-            roda do mouse.
+            Use a roda do mouse ou
+            o controle de zoom.
         </span>
 
     </div>
@@ -1459,8 +1953,8 @@ input[type="range"] {
         </strong>
 
         <span>
-            Reposiciona a foto
-            no centro.
+            Retorna a foto para
+            o centro da moldura.
         </span>
 
     </div>
@@ -1486,7 +1980,7 @@ input[type="range"] {
         </strong>
 
         <span>
-            Gera a imagem final
+            Gera a composição final
             em PNG.
         </span>
 
@@ -1501,25 +1995,24 @@ input[type="range"] {
 
 <script>
 
-
 /* =====================================================
-   MOLDURA LOCAL DO GITHUB
-=====================================================
-
-   IMPORTANTE:
-
-   O arquivo precisa estar na mesma pasta
-   deste index.html.
-
-   Estrutura:
-
-   index.html
-   moldura.png
-
+   CONFIGURAÇÃO
 ===================================================== */
 
+/*
+    IMPORTANTE:
+
+    O arquivo precisa estar na mesma pasta
+    do index.html.
+
+    Estrutura:
+
+    index.html
+    moldura-2.png
+*/
+
 const FRAME_URL =
-    "./moldura2.png";
+    "./moldura-2.png";
 
 
 /* =====================================================
@@ -1585,11 +2078,12 @@ const statusDot =
 const frame =
     new Image();
 
-/*
-   NÃO usar crossOrigin aqui.
 
-   Como a imagem está no mesmo domínio,
-   o canvas poderá ser exportado normalmente.
+/*
+    Não usamos crossOrigin.
+
+    A moldura está no mesmo domínio
+    do index.html.
 */
 
 frame.src =
@@ -1597,7 +2091,7 @@ frame.src =
 
 
 /* =====================================================
-   ESTADO
+   ESTADO DA FOTO
 ===================================================== */
 
 let photo = null;
@@ -1612,7 +2106,7 @@ let photoY = 0;
 
 
 /* =====================================================
-   DRAG
+   ESTADO DO MOUSE
 ===================================================== */
 
 let dragging = false;
@@ -1627,7 +2121,7 @@ let startPhotoY = 0;
 
 
 /* =====================================================
-   PINCH
+   ESTADO DO PINCH
 ===================================================== */
 
 let pinchStartDistance = 0;
@@ -1639,16 +2133,19 @@ let pinchStartZoom = 1;
    CARREGAMENTO DA MOLDURA
 ===================================================== */
 
-frame.onload =
-function() {
+frame.onload = function () {
+
 
     /*
-    O canvas terá EXATAMENTE
-    a resolução original da moldura.
+        O Canvas assume exatamente
+        a resolução original da moldura.
 
-    Portanto a exportação terá
-    exatamente o mesmo tamanho
-    da moldura PNG.
+        Exemplo:
+
+        Moldura 1080 x 1920
+
+        Canvas:
+        1080 x 1920
     */
 
     canvas.width =
@@ -1665,30 +2162,33 @@ function() {
 };
 
 
-frame.onerror =
-function() {
+frame.onerror = function () {
 
     statusText.textContent =
         "Erro ao carregar moldura";
 
+
     alert(
-        "Não foi possível carregar moldura.png. " +
-        "Verifique se o arquivo está na mesma pasta do index.html."
+        "Não foi possível carregar moldura-2.png.\n\n" +
+        "Verifique se o arquivo está na mesma pasta " +
+        "do index.html."
     );
 
 };
 
 
 /* =====================================================
-   CARREGAR FOTO
+   CARREGAR FOTO DO USUÁRIO
 ===================================================== */
 
 photoInput.addEventListener(
     "change",
-    function(event) {
+    function (event) {
+
 
         const file =
             event.target.files[0];
+
 
         if (!file)
             return;
@@ -1702,14 +2202,16 @@ photoInput.addEventListener(
 
 
         reader.onload =
-        function(e) {
+        function (e) {
+
 
             const img =
                 new Image();
 
 
             img.onload =
-            function() {
+            function () {
+
 
                 photo =
                     img;
@@ -1756,9 +2258,11 @@ photoInput.addEventListener(
 
 
             img.onerror =
-            function() {
+            function () {
+
 
                 showLoading(false);
+
 
                 alert(
                     "Não foi possível carregar a foto."
@@ -1785,6 +2289,7 @@ photoInput.addEventListener(
 
 function getBaseScale() {
 
+
     if (!photo)
         return 1;
 
@@ -1799,6 +2304,13 @@ function getBaseScale() {
         photo.height;
 
 
+    /*
+        COVER
+
+        A foto sempre cobre
+        completamente o canvas.
+    */
+
     return Math.max(
         scaleX,
         scaleY
@@ -1808,13 +2320,15 @@ function getBaseScale() {
 
 
 /* =====================================================
-   CENTRALIZAR
+   CENTRALIZAR FOTO
 ===================================================== */
 
 function centerPhoto() {
 
+
     photoX =
         canvas.width / 2;
+
 
     photoY =
         canvas.height / 2;
@@ -1823,10 +2337,11 @@ function centerPhoto() {
 
 
 /* =====================================================
-   LIMITAR FOTO
+   LIMITAR FOTO À ÁREA DE RECORTE
 ===================================================== */
 
 function constrainPhoto() {
+
 
     if (!photo)
         return;
@@ -1850,6 +2365,7 @@ function constrainPhoto() {
     const centerX =
         canvas.width / 2;
 
+
     const centerY =
         canvas.height / 2;
 
@@ -1863,6 +2379,7 @@ function constrainPhoto() {
     if (
         width >= canvas.width
     ) {
+
 
         const maxOffset =
             (
@@ -1880,7 +2397,9 @@ function constrainPhoto() {
                 )
             );
 
+
     } else {
+
 
         photoX =
             centerX;
@@ -1898,6 +2417,7 @@ function constrainPhoto() {
         height >= canvas.height
     ) {
 
+
         const maxOffset =
             (
                 height -
@@ -1914,7 +2434,9 @@ function constrainPhoto() {
                 )
             );
 
+
     } else {
+
 
         photoY =
             centerY;
@@ -1925,14 +2447,19 @@ function constrainPhoto() {
 
 
 /* =====================================================
-   DESENHAR
+   DESENHAR COMPOSIÇÃO
 ===================================================== */
 
 function draw() {
 
+
     if (!frame.complete)
         return;
 
+
+    /*
+    Limpar canvas
+    */
 
     ctx.clearRect(
         0,
@@ -1950,7 +2477,9 @@ function draw() {
 
     ctx.save();
 
+
     ctx.beginPath();
+
 
     ctx.rect(
         0,
@@ -1958,6 +2487,7 @@ function draw() {
         canvas.width,
         canvas.height
     );
+
 
     ctx.clip();
 
@@ -1969,6 +2499,7 @@ function draw() {
     */
 
     if (photo) {
+
 
         const scale =
             getBaseScale() *
@@ -1988,11 +2519,19 @@ function draw() {
         ctx.save();
 
 
+        /*
+        Posicionamento
+        */
+
         ctx.translate(
             photoX,
             photoY
         );
 
+
+        /*
+        Rotação
+        */
 
         ctx.rotate(
             rotation *
@@ -2001,14 +2540,22 @@ function draw() {
         );
 
 
+        /*
+        Foto
+        */
+
         ctx.drawImage(
+
             photo,
 
             -width / 2,
+
             -height / 2,
 
             width,
+
             height
+
         );
 
 
@@ -2025,31 +2572,38 @@ function draw() {
     MOLDURA
     =================================================
 
-    SEMPRE DESENHADA POR ÚLTIMO.
+    IMPORTANTE:
 
-    Portanto fica acima da foto.
+    A moldura é desenhada DEPOIS da foto.
+
+    Portanto fica SEMPRE POR CIMA.
     */
 
     ctx.drawImage(
+
         frame,
 
         0,
+
         0,
 
         canvas.width,
+
         canvas.height
+
     );
 
 }
 
 
 /* =====================================================
-   ZOOM SLIDER
+   ZOOM PELO SLIDER
 ===================================================== */
 
 zoomControl.addEventListener(
     "input",
-    function() {
+    function () {
+
 
         zoom =
             parseFloat(
@@ -2073,7 +2627,8 @@ zoomControl.addEventListener(
 
 rotationControl.addEventListener(
     "input",
-    function() {
+    function () {
+
 
         rotation =
             parseFloat(
@@ -2095,7 +2650,8 @@ rotationControl.addEventListener(
 
 stage.addEventListener(
     "wheel",
-    function(event) {
+    function (event) {
+
 
         if (!photo)
             return;
@@ -2132,7 +2688,8 @@ stage.addEventListener(
 
     },
     {
-        passive: false
+        passive:
+            false
     }
 );
 
@@ -2143,17 +2700,20 @@ stage.addEventListener(
 
 stage.addEventListener(
     "mousedown",
-    function(event) {
+    function (event) {
+
 
         if (!photo)
             return;
 
 
-        dragging = true;
+        dragging =
+            true;
 
 
         startX =
             event.clientX;
+
 
         startY =
             event.clientY;
@@ -2161,6 +2721,7 @@ stage.addEventListener(
 
         startPhotoX =
             photoX;
+
 
         startPhotoY =
             photoY;
@@ -2175,7 +2736,8 @@ stage.addEventListener(
 
 window.addEventListener(
     "mousemove",
-    function(event) {
+    function (event) {
+
 
         if (!dragging)
             return;
@@ -2227,7 +2789,8 @@ window.addEventListener(
 
 window.addEventListener(
     "mouseup",
-    function() {
+    function () {
+
 
         dragging =
             false;
@@ -2242,19 +2805,23 @@ window.addEventListener(
 
 stage.addEventListener(
     "touchstart",
-    function(event) {
+    function (event) {
+
 
         if (!photo)
             return;
 
 
         /*
+        =================================================
         PINCH
+        =================================================
         */
 
         if (
             event.touches.length === 2
         ) {
+
 
             pinchStartDistance =
                 getTouchDistance(
@@ -2272,7 +2839,9 @@ stage.addEventListener(
 
 
         /*
-        ARRASTAR
+        =================================================
+        ARRASTAR COM UM DEDO
+        =================================================
         */
 
         const touch =
@@ -2286,6 +2855,7 @@ stage.addEventListener(
         startX =
             touch.clientX;
 
+
         startY =
             touch.clientY;
 
@@ -2293,12 +2863,14 @@ stage.addEventListener(
         startPhotoX =
             photoX;
 
+
         startPhotoY =
             photoY;
 
     },
     {
-        passive: false
+        passive:
+            false
     }
 );
 
@@ -2309,7 +2881,8 @@ stage.addEventListener(
 
 stage.addEventListener(
     "touchmove",
-    function(event) {
+    function (event) {
+
 
         if (!photo)
             return;
@@ -2327,6 +2900,7 @@ stage.addEventListener(
         if (
             event.touches.length === 2
         ) {
+
 
             const distance =
                 getTouchDistance(
@@ -2360,6 +2934,7 @@ stage.addEventListener(
 
             draw();
 
+
             return;
 
         }
@@ -2372,8 +2947,10 @@ stage.addEventListener(
         */
 
         if (
-            dragging
+            dragging &&
+            event.touches.length === 1
         ) {
+
 
             const touch =
                 event.touches[0];
@@ -2419,7 +2996,8 @@ stage.addEventListener(
 
     },
     {
-        passive: false
+        passive:
+            false
     }
 );
 
@@ -2430,7 +3008,8 @@ stage.addEventListener(
 
 stage.addEventListener(
     "touchend",
-    function() {
+    function () {
+
 
         dragging =
             false;
@@ -2444,6 +3023,7 @@ stage.addEventListener(
 ===================================================== */
 
 function getTouchDistance(touches) {
+
 
     const dx =
         touches[0].clientX -
@@ -2469,7 +3049,8 @@ function getTouchDistance(touches) {
 
 centerBtn.addEventListener(
     "click",
-    function() {
+    function () {
+
 
         centerPhoto();
 
@@ -2485,10 +3066,12 @@ centerBtn.addEventListener(
 
 resetBtn.addEventListener(
     "click",
-    function() {
+    function () {
+
 
         zoom =
             1;
+
 
         rotation =
             0;
@@ -2496,6 +3079,7 @@ resetBtn.addEventListener(
 
         zoomControl.value =
             1;
+
 
         rotationControl.value =
             0;
@@ -2512,12 +3096,13 @@ resetBtn.addEventListener(
 
 
 /* =====================================================
-   TELA CHEIA
+   FULLSCREEN
 ===================================================== */
 
 fullscreenBtn.addEventListener(
     "click",
-    function() {
+    function () {
+
 
         stage.classList.toggle(
             "fullscreen"
@@ -2530,10 +3115,13 @@ fullscreenBtn.addEventListener(
             )
         ) {
 
+
             fullscreenBtn.textContent =
                 "✕";
 
+
         } else {
+
 
             fullscreenBtn.textContent =
                 "⛶";
@@ -2545,20 +3133,23 @@ fullscreenBtn.addEventListener(
 
 
 /* =====================================================
-   ESC
+   TECLA ESC
 ===================================================== */
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
+
 
         if (
             event.key === "Escape"
         ) {
 
+
             stage.classList.remove(
                 "fullscreen"
             );
+
 
             fullscreenBtn.textContent =
                 "⛶";
@@ -2575,13 +3166,16 @@ document.addEventListener(
 
 downloadBtn.addEventListener(
     "click",
-    function() {
+    function () {
+
 
         if (!photo) {
+
 
             alert(
                 "Carregue uma foto primeiro."
             );
+
 
             return;
 
@@ -2591,19 +3185,29 @@ downloadBtn.addEventListener(
         showLoading(true);
 
 
+        /*
+        Pequeno atraso para permitir
+        que o indicador apareça.
+        */
+
         setTimeout(
-            function() {
+            function () {
+
 
                 canvas.toBlob(
-                    function(blob) {
+                    function (blob) {
+
 
                         if (!blob) {
 
+
                             showLoading(false);
+
 
                             alert(
                                 "Não foi possível gerar a imagem."
                             );
+
 
                             return;
 
@@ -2665,10 +3269,11 @@ downloadBtn.addEventListener(
 
 
 /* =====================================================
-   INTERFACE
+   ATUALIZAR INTERFACE
 ===================================================== */
 
 function updateUI() {
+
 
     const percentage =
         Math.round(
@@ -2698,13 +3303,17 @@ function updateUI() {
 
 function showLoading(show) {
 
+
     if (show) {
+
 
         loading.classList.remove(
             "hidden"
         );
 
+
     } else {
+
 
         loading.classList.add(
             "hidden"
@@ -2723,7 +3332,7 @@ updateUI();
 
 </script>
 
+
 </body>
 
 </html>
-```
