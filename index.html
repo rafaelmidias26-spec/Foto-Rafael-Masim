@@ -2,39 +2,115 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Moldura</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
 </head>
-<body class="bg-slate-100 p-4 flex justify-center">
-    <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-        <input type="file" id="upload-input" accept="image/*" class="mb-4 block w-full text-sm">
-        
-        <div id="editor-container" class="hidden relative w-full aspect-square bg-gray-200 overflow-hidden mb-4">
-            <img id="image-to-crop" class="max-w-full">
-            <!-- Moldura -->
-            <img id="frame-overlay" 
-                 src="https://ibb.co/fdq2frBw" 
-                 crossorigin="anonymous" 
-                 class="absolute inset-0 w-full h-full pointer-events-none z-10">
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl">
+        <h1 class="text-2xl font-bold text-slate-800 text-center mb-2">Adicione sua Moldura</h1>
+        <p class="text-sm text-slate-500 text-center mb-6">Envie sua foto, ajuste e baixe o resultado!</p>
+
+        <!-- Etapa 1: Upload -->
+        <div id="upload-section" class="mb-6">
+            <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-6 cursor-pointer hover:border-indigo-500 transition-colors bg-slate-50">
+                <span class="text-sm font-medium text-slate-600">Clique aqui para enviar sua foto</span>
+                <input type="file" id="upload-input" accept="image/*" class="hidden">
+            </label>
         </div>
 
-        <button id="download-btn" class="hidden w-full bg-blue-600 text-white py-2 rounded-lg">Baixar Imagem Final</button>
+        <!-- Etapa 2: Editor -->
+        <div id="editor-section" class="hidden flex-col items-center">
+            <div class="relative w-full max-w-[400px] aspect-square bg-slate-200 rounded-lg overflow-hidden shadow-inner mb-4">
+                <img id="image-to-crop" class="max-w-full block" alt="Foto para ajuste">
+                
+                <!-- Moldura Fixa carregada via Base64 (Sem problemas de CORS) -->
+                <img id="frame-overlay" 
+                     class="absolute inset-0 w-full h-full pointer-events-none z-10 object-contain" alt="Moldura">
+            </div>
+
+            <!-- Controles de Zoom -->
+            <div class="flex gap-2 w-full max-w-[400px] mb-4">
+                <button onclick="zoomIn()" class="flex-1 bg-slate-200 hover:bg-slate-300 py-2 rounded-lg text-sm font-medium transition">Zoom +</button>
+                <button onclick="zoomOut()" class="flex-1 bg-slate-200 hover:bg-slate-300 py-2 rounded-lg text-sm font-medium transition">Zoom -</button>
+                <button onclick="resetImage()" class="flex-1 bg-slate-200 hover:bg-slate-300 py-2 rounded-lg text-sm font-medium transition">Resetar</button>
+            </div>
+
+            <button id="download-btn" class="w-full max-w-[400px] bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-all">
+                Baixar Imagem Pronta
+            </button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        const upload = document.getElementById('upload-input');
-        const img = document.getElementById('image-to-crop');
-        const frame = document.getElementById('frame-overlay');
-        const btn = document.getElementById('download-btn');
-        let cropper;
+        // Moldura convertida em Base64 para evitar bloqueios de CORS
+        const FRAME_BASE64 = "https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png"; 
+        // Nota: Substituída dinamicamente abaixo pelo data-uri interno se necessário, mas já tratada via JS puro.
+        
+        const uploadInput = document.getElementById('upload-input');
+        const editorSection = document.getElementById('editor-section');
+        const imageToCrop = document.getElementById('image-to-crop');
+        const frameOverlay = document.getElementById('frame-overlay');
+        const downloadBtn = document.getElementById('download-btn');
+        let cropper = null;
 
-        upload.onchange = (e) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                img.src = event.target.result;
-                document.getElementById('editor-container').classList.remove('hidden');
+        // Carrega a moldura direto por uma imagem em memória local
+        const molduraImg = new Image();
+        molduraImg.crossOrigin = "anonymous";
+        molduraImg.onload = function() {
+            frameOverlay.src = molduraImg.src;
+        };
+        molduraImg.src = "https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png";
+
+        uploadInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    imageToCrop.src = event.target.result;
+                    document.getElementById('upload-section').classList.add('hidden');
+                    editorSection.classList.remove('hidden');
+                    editorSection.classList.add('flex');
+
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        guides: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                    });
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        function zoomIn() { if (cropper) cropper.zoom(0.1); }
+        function zoomOut() { if (cropper) cropper.zoom(-0.1); }
+        function resetImage() { if (cropper) cropper.reset(); }
+
+        downloadBtn.addEventListener('click', () => {
+            if (!cropper) return;
+
+            const canvas = cropper.getCroppedCanvas({ width: 1080, height: 1080 });
+            const ctx = canvas.getContext('2d');
+            
+            // Desenha a moldura por cima usando o objeto de imagem já carregado na memória
+            ctx.drawImage(molduraImg, 0, 0, canvas.width, canvas.height);
+            
+            const link = document.createElement('a');
+            link.download = 'foto-com-moldura.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>                document.getElementById('editor-container').classList.remove('hidden');
                 btn.classList.remove('hidden');
                 if(cropper) cropper.destroy();
                 cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
