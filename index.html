@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Editor de Foto</title>
+    <title>Eu Voto - Criador de Foto</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -15,8 +17,8 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background: #101114;
-            color: #fff;
+            background: #0d0f12;
+            color: #ffffff;
             min-height: 100vh;
         }
 
@@ -27,65 +29,88 @@
 
         header h1 {
             font-size: 30px;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
         header p {
-            color: #aaa;
+            color: #9ea3aa;
             font-size: 15px;
         }
 
         .app {
             width: min(1200px, 95%);
             margin: auto;
+
             display: grid;
             grid-template-columns: 320px 1fr;
+
             gap: 25px;
+
             padding-bottom: 40px;
         }
 
-        /* PAINEL */
+        /* =========================
+           PAINEL
+        ========================= */
 
         .panel {
-            background: #1b1d21;
+            background: #191c20;
             border-radius: 18px;
+
             padding: 22px;
-            box-shadow: 0 15px 40px rgba(0,0,0,.35);
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.35);
         }
 
         .panel h2 {
-            font-size: 18px;
+            font-size: 19px;
             margin-bottom: 20px;
         }
 
         .upload-area {
-            border: 2px dashed #555;
+            display: block;
+
+            border: 2px dashed #50545b;
             border-radius: 14px;
+
             padding: 25px 15px;
+
             text-align: center;
+
             cursor: pointer;
+
             transition: .2s;
+
             margin-bottom: 25px;
         }
 
         .upload-area:hover {
-            border-color: #fff;
-            background: #24262b;
+            border-color: #ffffff;
+            background: #22252a;
         }
 
         .upload-area strong {
             display: block;
+
             margin-bottom: 8px;
+
+            font-size: 15px;
         }
 
         .upload-area span {
-            color: #999;
+            color: #969ba3;
             font-size: 13px;
         }
 
-        input[type="file"] {
+        #photoInput {
             display: none;
         }
+
+        /* =========================
+           CONTROLES
+        ========================= */
 
         .control {
             margin-bottom: 22px;
@@ -93,10 +118,14 @@
 
         .control label {
             display: flex;
+
             justify-content: space-between;
-            font-size: 14px;
+
             margin-bottom: 9px;
-            color: #ddd;
+
+            font-size: 14px;
+
+            color: #dddddd;
         }
 
         input[type="range"] {
@@ -107,86 +136,128 @@
         .buttons {
             display: grid;
             gap: 10px;
+
+            margin-top: 25px;
         }
 
         button {
             border: none;
+
             border-radius: 10px;
+
             padding: 13px;
+
             font-size: 14px;
+
             font-weight: bold;
+
             cursor: pointer;
+
             transition: .2s;
         }
 
         .btn-reset {
-            background: #303238;
-            color: #fff;
+            background: #30343a;
+            color: #ffffff;
         }
 
         .btn-reset:hover {
-            background: #3c3f46;
+            background: #3c4148;
         }
 
         .btn-download {
-            background: #fff;
-            color: #111;
+            background: #ffffff;
+            color: #111111;
         }
 
         .btn-download:hover {
+            background: #e9e9e9;
             transform: translateY(-1px);
-            background: #e8e8e8;
         }
 
-        /* ÁREA DE PREVISUALIZAÇÃO */
+        /* =========================
+           PREVIEW
+        ========================= */
 
         .preview-panel {
-            background: #1b1d21;
+            background: #191c20;
+
             border-radius: 18px;
+
             padding: 22px;
+
             display: flex;
             flex-direction: column;
         }
 
         .preview-header {
             display: flex;
+
             justify-content: space-between;
             align-items: center;
+
             margin-bottom: 15px;
         }
 
         .preview-header h2 {
-            font-size: 18px;
+            font-size: 19px;
         }
 
         .status {
             font-size: 12px;
-            color: #aaa;
+            color: #8e949c;
         }
 
         .canvas-container {
+
             width: 100%;
-            flex: 1;
+
             min-height: 650px;
-            background:
-                linear-gradient(45deg, #292b30 25%, transparent 25%),
-                linear-gradient(-45deg, #292b30 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #292b30 75%),
-                linear-gradient(-45deg, transparent 75%, #292b30 75%);
+
+            background-color: #272a2f;
+
+            /*
+            Fundo quadriculado para demonstrar
+            transparência.
+            */
+
+            background-image:
+                linear-gradient(45deg, #32353b 25%, transparent 25%),
+                linear-gradient(-45deg, #32353b 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #32353b 75%),
+                linear-gradient(-45deg, transparent 75%, #32353b 75%);
+
             background-size: 30px 30px;
-            background-position: 0 0, 0 15px, 15px -15px, -15px 0;
+
+            background-position:
+                0 0,
+                0 15px,
+                15px -15px,
+                -15px 0;
+
             border-radius: 14px;
+
             overflow: hidden;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
         }
 
         canvas {
+
             max-width: 100%;
             max-height: 100%;
+
+            width: auto;
+            height: auto;
+
             display: block;
+
             cursor: grab;
+
+            touch-action: none;
         }
 
         canvas:active {
@@ -194,11 +265,19 @@
         }
 
         .instructions {
+
             text-align: center;
-            color: #777;
+
+            color: #777e87;
+
             font-size: 12px;
+
             margin-top: 12px;
         }
+
+        /* =========================
+           MOBILE
+        ========================= */
 
         @media (max-width: 850px) {
 
@@ -211,46 +290,83 @@
             }
 
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <header>
-    <h1>Editor de Foto</h1>
-    <p>Posicione sua foto dentro da moldura</p>
+
+    <h1>Crie sua foto</h1>
+
+    <p>
+        Carregue sua foto e ajuste dentro da moldura
+    </p>
+
 </header>
+
+
 
 <div class="app">
 
-    <!-- PAINEL DE CONTROLE -->
+
+    <!-- =====================================
+         PAINEL DE CONTROLE
+    ====================================== -->
 
     <div class="panel">
 
-        <h2>Configurações</h2>
+        <h2>Personalize sua foto</h2>
 
-        <label class="upload-area" for="photoInput">
-            <strong>📷 Carregar sua foto</strong>
-            <span>Clique aqui para selecionar uma imagem</span>
+
+        <label
+            class="upload-area"
+            for="photoInput"
+        >
+
+            <strong>
+                📷 Carregar minha foto
+            </strong>
+
+            <span>
+                Clique aqui para selecionar uma imagem
+            </span>
+
         </label>
+
 
         <input
             type="file"
             id="photoInput"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/jpeg,image/png,image/webp"
         >
+
+
+        <!-- ZOOM -->
 
         <div class="control">
 
             <label>
-                <span>Zoom</span>
-                <span id="zoomValue">100%</span>
+
+                <span>
+                    Zoom
+                </span>
+
+                <span id="zoomValue">
+                    100%
+                </span>
+
             </label>
+
 
             <input
                 type="range"
                 id="zoom"
-                min="0.2"
+                min="0.5"
                 max="4"
                 step="0.01"
                 value="1"
@@ -258,12 +374,24 @@
 
         </div>
 
+
+
+        <!-- ROTAÇÃO -->
+
         <div class="control">
 
             <label>
-                <span>Rotação</span>
-                <span id="rotationValue">0°</span>
+
+                <span>
+                    Rotação
+                </span>
+
+                <span id="rotationValue">
+                    0°
+                </span>
+
             </label>
+
 
             <input
                 type="range"
@@ -276,18 +404,23 @@
 
         </div>
 
+
+
         <div class="buttons">
 
             <button
                 class="btn-reset"
-                id="resetBtn">
+                id="resetBtn"
+            >
                 ↺ Restaurar posição
             </button>
 
+
             <button
                 class="btn-download"
-                id="downloadBtn">
-                ↓ Baixar imagem final
+                id="downloadBtn"
+            >
+                ↓ Baixar foto final
             </button>
 
         </div>
@@ -295,30 +428,45 @@
     </div>
 
 
-    <!-- PREVISUALIZAÇÃO -->
+
+    <!-- =====================================
+         PREVISUALIZAÇÃO
+    ====================================== -->
 
     <div class="preview-panel">
 
+
         <div class="preview-header">
 
-            <h2>Pré-visualização</h2>
+            <h2>
+                Pré-visualização
+            </h2>
 
             <span
                 class="status"
-                id="status">
+                id="status"
+            >
                 Nenhuma foto carregada
             </span>
 
         </div>
 
+
+
         <div class="canvas-container">
 
-            <canvas id="canvas"></canvas>
+            <canvas
+                id="canvas"
+            ></canvas>
 
         </div>
 
+
         <div class="instructions">
-            Arraste a foto para posicionar • Use o controle de zoom para ajustar
+
+            Arraste a foto para posicionar •
+            Use o zoom para aproximar ou afastar
+
         </div>
 
     </div>
@@ -326,82 +474,152 @@
 </div>
 
 
+
 <script>
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
 
-const photoInput = document.getElementById("photoInput");
+/*
+========================================================
+URL DA MOLDURA
+========================================================
 
-const zoomControl = document.getElementById("zoom");
-const rotationControl = document.getElementById("rotation");
+A moldura agora vem diretamente deste endereço.
+*/
 
-const zoomValue = document.getElementById("zoomValue");
-const rotationValue = document.getElementById("rotationValue");
-
-const resetBtn = document.getElementById("resetBtn");
-const downloadBtn = document.getElementById("downloadBtn");
-
-const status = document.getElementById("status");
+const FRAME_URL =
+"https://www.image2url.com/r2/default/images/1787190565921-f7dd210d-b8eb-424f-bb76-d79ded28c0f3.png";
 
 
 /*
 ========================================================
-CONFIGURAÇÃO DA MOLDURA
+ELEMENTOS
 ========================================================
-
-Coloque o arquivo "moldura.png" na mesma pasta deste HTML.
-
-IMPORTANTE:
-
-A moldura deve possuir transparência (canal alpha).
-
-As partes transparentes permitirão visualizar a foto
-do usuário por baixo.
-
-As partes desenhadas da moldura ficarão por cima.
 */
 
-const frame = new Image();
+const canvas =
+document.getElementById("canvas");
 
-frame.src = "moldura.png";
+const ctx =
+canvas.getContext("2d");
+
+const photoInput =
+document.getElementById("photoInput");
+
+const zoomControl =
+document.getElementById("zoom");
+
+const rotationControl =
+document.getElementById("rotation");
+
+const zoomValue =
+document.getElementById("zoomValue");
+
+const rotationValue =
+document.getElementById("rotationValue");
+
+const resetBtn =
+document.getElementById("resetBtn");
+
+const downloadBtn =
+document.getElementById("downloadBtn");
+
+const status =
+document.getElementById("status");
 
 
 /*
 ========================================================
-VARIÁVEIS
+IMAGENS
 ========================================================
 */
+
+const frame =
+new Image();
+
+/*
+Permite que o navegador tente carregar
+a imagem externa para uso no canvas.
+*/
+
+frame.crossOrigin = "anonymous";
+
+frame.src = FRAME_URL;
+
 
 let photo = null;
 
+
+/*
+========================================================
+POSIÇÃO DA FOTO
+========================================================
+*/
+
 let photoX = 0;
+
 let photoY = 0;
 
 let zoom = 1;
+
 let rotation = 0;
+
+
+/*
+========================================================
+DRAG
+========================================================
+*/
 
 let dragging = false;
 
 let startMouseX = 0;
+
 let startMouseY = 0;
 
 let startPhotoX = 0;
+
 let startPhotoY = 0;
 
 
 /*
 ========================================================
-DIMENSÕES DA MOLDURA
+CARREGAMENTO DA MOLDURA
 ========================================================
 */
 
 frame.onload = function () {
 
-    canvas.width = frame.naturalWidth;
-    canvas.height = frame.naturalHeight;
+    canvas.width =
+        frame.naturalWidth;
+
+    canvas.height =
+        frame.naturalHeight;
+
+
+    /*
+    Centraliza a foto.
+    */
+
+    photoX =
+        canvas.width / 2;
+
+    photoY =
+        canvas.height / 2;
+
 
     draw();
+
+};
+
+
+frame.onerror = function () {
+
+    status.textContent =
+        "Erro ao carregar a moldura";
+
+    console.error(
+        "Não foi possível carregar a moldura."
+    );
 
 };
 
@@ -412,61 +630,104 @@ CARREGAR FOTO
 ========================================================
 */
 
-photoInput.addEventListener("change", function(event) {
+photoInput.addEventListener(
+    "change",
+    function(event) {
 
-    const file = event.target.files[0];
+        const file =
+            event.target.files[0];
 
-    if (!file) return;
+        if (!file)
+            return;
 
-    const reader = new FileReader();
 
-    reader.onload = function(e) {
+        const reader =
+            new FileReader();
 
-        const img = new Image();
 
-        img.onload = function() {
+        reader.onload =
+        function(e) {
 
-            photo = img;
+            const img =
+                new Image();
 
-            zoom = 1;
-            rotation = 0;
 
-            zoomControl.value = zoom;
-            rotationControl.value = rotation;
+            img.onload =
+            function() {
 
-            /*
-            Centraliza a foto inicialmente
-            */
+                photo = img;
 
-            photoX = canvas.width / 2;
-            photoY = canvas.height / 2;
 
-            status.textContent = "Foto carregada";
+                /*
+                ======================================
+                POSIÇÃO INICIAL
+                ======================================
+                */
 
-            updateLabels();
+                photoX =
+                    canvas.width / 2;
 
-            draw();
+                photoY =
+                    canvas.height / 2;
+
+
+                /*
+                ======================================
+                ZOOM INICIAL
+                ======================================
+                */
+
+                zoom = 1;
+
+                rotation = 0;
+
+
+                zoomControl.value =
+                    zoom;
+
+                rotationControl.value =
+                    rotation;
+
+
+                status.textContent =
+                    "Foto carregada";
+
+
+                updateLabels();
+
+                draw();
+
+            };
+
+
+            img.src =
+                e.target.result;
 
         };
 
-        img.src = e.target.result;
 
-    };
+        reader.readAsDataURL(file);
 
-    reader.readAsDataURL(file);
-
-});
+    }
+);
 
 
 /*
 ========================================================
-DESENHAR
+DESENHAR COMPOSIÇÃO
 ========================================================
 */
 
 function draw() {
 
-    if (!frame.complete) return;
+
+    if (!frame.complete)
+        return;
+
+
+    /*
+    Limpa canvas
+    */
 
     ctx.clearRect(
         0,
@@ -477,63 +738,90 @@ function draw() {
 
 
     /*
-    ----------------------------------------------
-    FUNDO
-    ----------------------------------------------
-    */
-
-    ctx.save();
-
-    ctx.fillStyle = "#ffffff";
-
-    ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    ctx.restore();
-
-
-    /*
-    ----------------------------------------------
+    ====================================================
     FOTO DO USUÁRIO
-    ----------------------------------------------
+    ====================================================
     */
 
     if (photo) {
 
         ctx.save();
 
+
+        /*
+        Move para o centro da foto
+        */
+
         ctx.translate(
             photoX,
             photoY
         );
 
-        ctx.rotate(
-            rotation * Math.PI / 180
-        );
 
         /*
-        Calcula escala para que a imagem
-        cubra adequadamente a moldura.
+        Rotação
         */
 
-        const baseScale = Math.max(
-            canvas.width / photo.width,
-            canvas.height / photo.height
+        ctx.rotate(
+            rotation *
+            Math.PI /
+            180
         );
 
-        const scale = baseScale * zoom;
+
+        /*
+        =================================================
+        ESCALA
+
+        Faz a foto cobrir todo o canvas.
+        =================================================
+        */
+
+        const scaleX =
+            canvas.width /
+            photo.width;
+
+        const scaleY =
+            canvas.height /
+            photo.height;
+
+
+        const baseScale =
+            Math.max(
+                scaleX,
+                scaleY
+            );
+
+
+        const finalScale =
+            baseScale *
+            zoom;
+
+
+        const width =
+            photo.width *
+            finalScale;
+
+
+        const height =
+            photo.height *
+            finalScale;
+
+
+        /*
+        Desenha centralizada
+        */
 
         ctx.drawImage(
             photo,
-            -photo.width * scale / 2,
-            -photo.height * scale / 2,
-            photo.width * scale,
-            photo.height * scale
+
+            -width / 2,
+            -height / 2,
+
+            width,
+            height
         );
+
 
         ctx.restore();
 
@@ -541,21 +829,25 @@ function draw() {
 
 
     /*
-    ----------------------------------------------
+    ====================================================
     MOLDURA
-    ----------------------------------------------
+    ====================================================
 
-    MUITO IMPORTANTE:
+    ESTA É A PARTE MAIS IMPORTANTE.
 
-    A moldura é desenhada DEPOIS da foto.
+    A moldura é desenhada DEPOIS da fotografia.
 
-    Portanto ela sempre fica por cima.
+    Portanto todos os elementos da moldura ficam
+    visualmente sobre a fotografia.
+    ====================================================
     */
 
     ctx.drawImage(
         frame,
+
         0,
         0,
+
         canvas.width,
         canvas.height
     );
@@ -569,15 +861,21 @@ ZOOM
 ========================================================
 */
 
-zoomControl.addEventListener("input", function() {
+zoomControl.addEventListener(
+    "input",
+    function() {
 
-    zoom = parseFloat(this.value);
+        zoom =
+            parseFloat(
+                this.value
+            );
 
-    updateLabels();
+        updateLabels();
 
-    draw();
+        draw();
 
-});
+    }
+);
 
 
 /*
@@ -586,27 +884,36 @@ ROTAÇÃO
 ========================================================
 */
 
-rotationControl.addEventListener("input", function() {
+rotationControl.addEventListener(
+    "input",
+    function() {
 
-    rotation = parseFloat(this.value);
+        rotation =
+            parseFloat(
+                this.value
+            );
 
-    updateLabels();
+        updateLabels();
 
-    draw();
+        draw();
 
-});
+    }
+);
 
 
 /*
 ========================================================
-ATUALIZAR TEXTOS
+ATUALIZAR INDICADORES
 ========================================================
 */
 
 function updateLabels() {
 
     zoomValue.textContent =
-        Math.round(zoom * 100) + "%";
+        Math.round(
+            zoom * 100
+        ) + "%";
+
 
     rotationValue.textContent =
         rotation + "°";
@@ -616,59 +923,96 @@ function updateLabels() {
 
 /*
 ========================================================
-MOUSE - ARRASTAR FOTO
+ARRASTAR COM MOUSE
 ========================================================
 */
 
-canvas.addEventListener("mousedown", function(event) {
+canvas.addEventListener(
+    "mousedown",
+    function(event) {
 
-    if (!photo) return;
-
-    dragging = true;
-
-    startMouseX = event.clientX;
-    startMouseY = event.clientY;
-
-    startPhotoX = photoX;
-    startPhotoY = photoY;
-
-});
+        if (!photo)
+            return;
 
 
-window.addEventListener("mousemove", function(event) {
-
-    if (!dragging) return;
-
-    const rect = canvas.getBoundingClientRect();
-
-    const scaleX =
-        canvas.width / rect.width;
-
-    const scaleY =
-        canvas.height / rect.height;
-
-    const deltaX =
-        (event.clientX - startMouseX) * scaleX;
-
-    const deltaY =
-        (event.clientY - startMouseY) * scaleY;
-
-    photoX =
-        startPhotoX + deltaX;
-
-    photoY =
-        startPhotoY + deltaY;
-
-    draw();
-
-});
+        dragging = true;
 
 
-window.addEventListener("mouseup", function() {
+        startMouseX =
+            event.clientX;
 
-    dragging = false;
+        startMouseY =
+            event.clientY;
 
-});
+
+        startPhotoX =
+            photoX;
+
+        startPhotoY =
+            photoY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    function(event) {
+
+        if (!dragging)
+            return;
+
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        const scaleX =
+            canvas.width /
+            rect.width;
+
+
+        const scaleY =
+            canvas.height /
+            rect.height;
+
+
+        const deltaX =
+            (event.clientX -
+             startMouseX)
+            * scaleX;
+
+
+        const deltaY =
+            (event.clientY -
+             startMouseY)
+            * scaleY;
+
+
+        photoX =
+            startPhotoX +
+            deltaX;
+
+
+        photoY =
+            startPhotoY +
+            deltaY;
+
+
+        draw();
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    function() {
+
+        dragging = false;
+
+    }
+);
 
 
 /*
@@ -681,20 +1025,34 @@ canvas.addEventListener(
     "touchstart",
     function(event) {
 
-        if (!photo) return;
+        if (!photo)
+            return;
 
-        const touch = event.touches[0];
+
+        const touch =
+            event.touches[0];
+
 
         dragging = true;
 
-        startMouseX = touch.clientX;
-        startMouseY = touch.clientY;
 
-        startPhotoX = photoX;
-        startPhotoY = photoY;
+        startMouseX =
+            touch.clientX;
+
+        startMouseY =
+            touch.clientY;
+
+
+        startPhotoX =
+            photoX;
+
+        startPhotoY =
+            photoY;
 
     },
-    { passive: true }
+    {
+        passive: true
+    }
 );
 
 
@@ -702,31 +1060,48 @@ canvas.addEventListener(
     "touchmove",
     function(event) {
 
-        if (!dragging) return;
+        if (!dragging)
+            return;
 
-        const touch = event.touches[0];
+
+        const touch =
+            event.touches[0];
+
 
         const rect =
             canvas.getBoundingClientRect();
 
+
         const scaleX =
-            canvas.width / rect.width;
+            canvas.width /
+            rect.width;
+
 
         const scaleY =
-            canvas.height / rect.height;
+            canvas.height /
+            rect.height;
+
 
         photoX =
             startPhotoX +
-            (touch.clientX - startMouseX) * scaleX;
+            (touch.clientX -
+             startMouseX) *
+            scaleX;
+
 
         photoY =
             startPhotoY +
-            (touch.clientY - startMouseY) * scaleY;
+            (touch.clientY -
+             startMouseY) *
+            scaleY;
+
 
         draw();
 
     },
-    { passive: true }
+    {
+        passive: true
+    }
 );
 
 
@@ -746,29 +1121,39 @@ RESTAURAR
 ========================================================
 */
 
-resetBtn.addEventListener("click", function() {
+resetBtn.addEventListener(
+    "click",
+    function() {
 
-    if (!photo) return;
+        if (!photo)
+            return;
 
-    zoom = 1;
 
-    rotation = 0;
+        zoom = 1;
 
-    photoX =
-        canvas.width / 2;
+        rotation = 0;
 
-    photoY =
-        canvas.height / 2;
 
-    zoomControl.value = zoom;
+        photoX =
+            canvas.width / 2;
 
-    rotationControl.value = rotation;
+        photoY =
+            canvas.height / 2;
 
-    updateLabels();
 
-    draw();
+        zoomControl.value =
+            zoom;
 
-});
+        rotationControl.value =
+            rotation;
+
+
+        updateLabels();
+
+        draw();
+
+    }
+);
 
 
 /*
@@ -777,52 +1162,94 @@ DOWNLOAD
 ========================================================
 */
 
-downloadBtn.addEventListener("click", function() {
+downloadBtn.addEventListener(
+    "click",
+    function() {
 
-    if (!photo) {
+        if (!photo) {
 
-        alert("Primeiro carregue uma foto.");
+            alert(
+                "Primeiro carregue sua foto."
+            );
 
-        return;
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        EXPORTAÇÃO
+
+        O canvas já contém:
+
+        CAMADA 1 → Foto do usuário
+        CAMADA 2 → Moldura PNG
+
+        Portanto exportamos o canvas inteiro.
+        =================================================
+        */
+
+
+        canvas.toBlob(
+            function(blob) {
+
+                if (!blob) {
+
+                    alert(
+                        "Não foi possível gerar a imagem."
+                    );
+
+                    return;
+
+                }
+
+
+                const url =
+                    URL.createObjectURL(
+                        blob
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    "eu-voto-foto.png";
+
+
+                document.body.appendChild(
+                    link
+                );
+
+
+                link.click();
+
+
+                document.body.removeChild(
+                    link
+                );
+
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            },
+
+            "image/png"
+
+        );
 
     }
-
-    /*
-    O canvas já contém:
-
-    1. Foto do usuário
-    2. Moldura PNG por cima
-
-    Portanto basta exportar.
-    */
-
-    canvas.toBlob(
-        function(blob) {
-
-            const url =
-                URL.createObjectURL(blob);
-
-            const link =
-                document.createElement("a");
-
-            link.href = url;
-
-            link.download =
-                "foto-com-moldura.png";
-
-            document.body.appendChild(link);
-
-            link.click();
-
-            document.body.removeChild(link);
-
-            URL.revokeObjectURL(url);
-
-        },
-        "image/png"
-    );
-
-});
+);
 
 
 /*
@@ -836,4 +1263,5 @@ updateLabels();
 </script>
 
 </body>
+
 </html>
